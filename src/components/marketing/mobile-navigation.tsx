@@ -26,6 +26,9 @@ export function MobileNavigation() {
         <span />
       </summary>
       <nav aria-label="Mobile navigation">
+        <a href="/login" onClick={closeMenu}>
+          Sign in
+        </a>
         <a href="#features" onClick={closeMenu}>
           Features
         </a>

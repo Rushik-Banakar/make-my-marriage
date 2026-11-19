@@ -6,9 +6,9 @@ This file tracks delivered features and the project's current state. Read it bef
 
 ## Current state
 
-The application scaffold and public homepage are complete within their stated scope. The homepage is a responsive web experience with illustrative, read-only wedding data. Authentication, persisted wedding management, and the other business workflows have not been implemented.
+The application scaffold and public homepage are complete within their stated scope. The homepage is a responsive web experience with illustrative, read-only wedding data. Google authentication and the protected My Weddings entry page are implemented locally; the live Google login, persisted session, empty membership list, and sign-out journey have been verified with development credentials. Code review identified an unresolved session-cookie refresh issue, so the authentication milestone remains in progress. Additional expiry and multi-account isolation checks remain pending. Persisted wedding creation and the other business workflows remain unimplemented.
 
-The latest implementation commit is `9243f0e` on `dev`, pushed to `origin/dev`. Deployment to a hosted environment has not been verified.
+The latest committed feature is `9243f0e` (homepage); the status-tracking documentation was committed as `f8497da` on `dev` and pushed to `origin/dev`. Authentication changes described below are not committed yet. Deployment to a hosted environment has not been verified.
 
 ## Scope references
 
@@ -49,11 +49,30 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
 - **Verified:** `npm run lint`, `npm run typecheck`, and `npm run build` passed. The homepage returned HTTP 200. Browser checks covered preview controls, FAQs, section links, mobile navigation, and responsive widths; no console errors or broken section links were found. Smooth scrolling and section landing positions were checked after the navigation changes. A separate read-only review found no actionable issues.
 - **Boundary:** This is not a functional wedding-management dashboard. The previews do not persist changes or enforce backend permissions. Sign-in, wedding creation, invitation delivery, actual RSVP submission, expense exports, and private gallery access remain future work. Automated WhatsApp reminders, receipt capture, vendor reconciliation, and QR entry were not added.
 
+### 3. Google sign-in and protected My Weddings entry
+
+- **Status:** In progress — implementation, local checks, and the core live Google/MongoDB journey verified; session-cookie refresh fix and additional expiry/multi-account isolation checks pending.
+- **Progress recorded:** 19 November 2026.
+- **Commit:** Not committed yet.
+- **Visual references:** Stitch Login & Sign Up desktop screen `2a4afe4273454d29b4ac5ad7a9917447` and My Weddings desktop screen `dbc8929e4a604fa2be2ca57ed9430161` in the existing project.
+- **Delivered:**
+  - Responsive `/login` with Google sign-in, loading/error feedback, and a disabled sign-in state when configuration is missing. Homepage navigation now links to sign-in.
+  - Lazy server-side Better Auth configuration using the pinned MongoDB adapter, an explicit trusted origin, database-backed authentication rate limits, and uncached provider session validation.
+  - Shared MongoDB connection pool, environment validation, and documented configuration in `.env.example` and [AUTH_SETUP.md](AUTH_SETUP.md).
+  - Protected `/weddings` with current-user membership listing, a new-account empty state, sign-out controls, and loading/error boundaries.
+  - Better Auth GET/POST handlers at `/api/auth/[...all]`, plus protected read-only `/api/v1/me` and `/api/v1/weddings` endpoints with response envelopes and `no-store` headers.
+  - Wedding queries start from the current user's active `weddingMembers` records, preserve the adapter-returned string user ID, and return only wedding summary fields. They do not grant ownership from sign-in.
+- **Verified:** 21 automated tests passed for configuration, mocked session-provider delegation without cookie caching, API authentication boundaries, session-derived query scope, safe summary serialization, and protected-page/empty-state behavior. Lint, type checking, and production build passed. Browser checks verified desktop and narrow phone login layouts (320px and 390px), generic error feedback, missing-configuration behavior, homepage sign-in navigation, and anonymous `/weddings` redirection to login; no browser console errors were observed. Actual unauthenticated account API requests returned 401 with `no-store`; the unconfigured auth provider route returned 503.
+- **Live verification:** Development settings were copied from `.env.example` into ignored `.env.local`, and the tracked example was restored to safe placeholders. After restarting the server, Atlas connectivity and the unique indexes on user email, session token, and rate-limit key were confirmed. The provider session endpoint returned HTTP 200 with null for an anonymous request. The enabled Google button opened the Google sign-in page. The user completed Google login in Edge; My Weddings showed the signed-in identity and an empty membership list. Reopening the page preserved the session, and an authenticated `/api/v1/weddings` request returned an empty data list. Sign-out returned to login, and a subsequent visit to `/weddings` redirected to login.
+- **Verification limit:** Explicit expiry, administrative revocation independent of sign-out, multi-account isolation, and memberships for existing weddings remain unverified against the live database. Automated tests cover mocked session handling and query scope but do not replace these checks. No real wedding data was created during this verification.
+- **Review:** A read-only subagent review against `origin/dev` at `f8497da` covered staged, unstaged, and untracked changes. It reported one P2 issue in `src/lib/auth/server.ts`, `getSession`: server-side session reads can extend the database expiry without delivering the refreshed cookie to the browser. An active user can therefore be signed out when the original seven-day browser cookie expires. No additional actionable findings were reported. The current code still contains this issue; no fix or re-review has been completed.
+- **Follow-up:** Implement a browser-capable session refresh path and propagate refresh cookies from application API responses, then test renewal across the update interval. Finish the remaining session and account-isolation checks in [AUTH_SETUP.md](AUTH_SETUP.md) before marking this milestone complete. Email OTP, profile editing, wedding creation, invitation acceptance, and dashboard entry are separate increments.
+
 ## Remaining work
 
-No next implementation feature has been selected yet. The following areas remain unimplemented; their detailed scope and sequencing must follow the four design documents:
+The current feature is Google sign-in and the protected My Weddings entry page. Resolve its review finding and finish the remaining live checks first. The following work remains; detailed scope and sequencing must follow the four design documents:
 
-- Authentication and account access.
+- Session-cookie refresh fix and renewal test; remaining session-expiry, administrative revocation, and multi-account isolation checks; account/profile and development-only email OTP requirements.
 - Wedding creation, wedding switching, co-owner onboarding, and server-enforced membership/permissions.
 - Persisted events, itinerary, tasks, and task templates.
 - Persisted budgets, expenses, reports, and authorized exports.

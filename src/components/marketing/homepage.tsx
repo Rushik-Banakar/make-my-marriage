@@ -157,6 +157,9 @@ export function Homepage() {
             <a href="#demo">Sample Workspace</a>
           </nav>
           <div className="header-actions">
+            <a className="header-sign-in" href="/login">
+              Sign in
+            </a>
             <a className="header-faq" href="#faq">
               FAQs
             </a>

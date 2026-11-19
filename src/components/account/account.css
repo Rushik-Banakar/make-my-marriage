@@ -1,0 +1,577 @@
+.account-app {
+  color: #0a332a;
+  background: #f1fcf4;
+  min-height: 100vh;
+  font:
+    1rem/1.7 "Manrope Variable",
+    Arial,
+    sans-serif;
+}
+.account-app * {
+  box-sizing: border-box;
+}
+.account-app :is(h1, h2, p) {
+  margin: 0;
+}
+.account-app :is(h1, h2) {
+  font-family: "Newsreader Variable", Georgia, serif;
+  font-weight: 400;
+  line-height: 1.15;
+}
+.account-app a {
+  text-decoration: none;
+}
+.account-app :is(a, button):focus-visible {
+  outline: 3px solid #987342;
+  outline-offset: 5px;
+}
+.account-header {
+  max-width: 1280px;
+  margin: auto;
+  padding: 24px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid #dce8e0;
+}
+.account-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #0a332a;
+}
+.account-brand > span {
+  display: grid;
+  place-items: center;
+  background: #244a40;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font:
+    28px "Newsreader Variable",
+    serif;
+}
+.account-brand > div {
+  font:
+    500 24px/1.25 "Newsreader Variable",
+    serif;
+}
+.account-brand small {
+  display: block;
+  font:
+    600 10px/1.6 "Manrope Variable",
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #745a34;
+  margin-top: 4px;
+}
+.account-text-link {
+  color: #315f50;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+.account-text-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.account-eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #745a34;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.login-main {
+  max-width: 1180px;
+  margin: auto;
+  padding: 64px 36px 72px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+.login-story h1 {
+  font-size: 64px;
+  letter-spacing: -1.8px;
+  margin: 24px 0;
+}
+.login-story h1 em {
+  color: #745a34;
+}
+.login-story > p {
+  color: #5d6d65;
+  max-width: 480px;
+}
+.login-illustration {
+  background: white;
+  border: 1px solid #e0ebe3;
+  box-shadow: 0 12px 30px -20px #214d3545;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 32px 0 24px;
+}
+.illustration-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.couple-monogram {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #e6f1e9;
+  font:
+    20px "Newsreader Variable",
+    serif;
+}
+.illustration-heading h2 {
+  font-size: 24px;
+}
+.illustration-heading small {
+  color: #5d6d65;
+  font-size: 0.75rem;
+}
+.illustration-progress {
+  border-top: 1px solid #e1ebe4;
+  margin-top: 22px;
+  padding-top: 18px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+.illustration-progress > div {
+  width: 100%;
+  height: 6px;
+  border-radius: 10px;
+  background: #e4eee7;
+}
+.illustration-progress > div > span {
+  display: block;
+  width: 75%;
+  height: 6px;
+  background: #9c865e;
+  border-radius: inherit;
+}
+.login-ceremonies {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 22px;
+}
+.login-ceremonies > span {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 7px;
+  padding: 13px 5px;
+  background: #eaf5ef;
+  border-radius: 8px;
+  font-size: 0.75rem;
+}
+.login-ceremonies > span:nth-child(3) {
+  background: #0a332a;
+  color: white;
+}
+.illustration-note {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 20px;
+  color: #5d6d65;
+  font-size: 0.75rem;
+}
+.account-app .m-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.login-story .story-note {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.75rem;
+}
+.login-card {
+  background: white;
+  border: 1px solid #e0ebe3;
+  border-radius: 20px;
+  padding: 44px 38px;
+  box-shadow: 0 18px 44px -30px #244a4045;
+  text-align: center;
+}
+.login-lock {
+  margin: 0 auto 20px;
+  background: #e5f0e8;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+.login-card h2 {
+  font-size: 38px;
+  margin: 18px 0;
+  letter-spacing: -0.6px;
+}
+.login-card > p {
+  color: #5d6d65;
+}
+.google-control {
+  margin-top: 30px;
+}
+.google-button {
+  width: 100%;
+  min-height: 54px;
+  padding: 14px;
+  border: 1px solid #bdcec2;
+  border-radius: 9px;
+  background: white;
+  color: #1d3e2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font:
+    650 0.875rem "Manrope Variable",
+    sans-serif;
+  cursor: pointer;
+}
+.google-button:hover:enabled {
+  background: #edf5ef;
+}
+.account-app button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.account-secondary {
+  color: #5d6d65;
+  font-size: 0.875rem;
+}
+.google-control .account-secondary {
+  margin-top: 16px;
+}
+.account-notice,
+.account-error {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px !important;
+  font-size: 0.875rem;
+  text-align: left;
+}
+.account-notice {
+  background: #fff3dd;
+  color: #624b25;
+}
+.account-error {
+  color: #8d2727;
+  background: #fff0ed;
+}
+.login-access-note {
+  display: flex;
+  text-align: left;
+  align-items: center;
+  gap: 12px;
+  background: #eaf5ef;
+  padding: 18px;
+  border-radius: 9px;
+  margin: 32px 0 24px;
+  font-size: 0.875rem;
+  color: #476354;
+}
+.account-footer {
+  padding: 24px 36px;
+  max-width: 1280px;
+  margin: auto;
+  border-top: 1px solid #dce8e0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #5d6d65;
+  font-size: 0.75rem;
+}
+.account-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 22px;
+  min-height: 46px;
+  background: #0a332a;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  font:
+    650 0.875rem/1.5 "Manrope Variable",
+    sans-serif;
+  cursor: pointer;
+}
+.account-button:hover {
+  background: #315f50;
+}
+.account-button.subtle {
+  background: white;
+  color: #244a40;
+  border: 1px solid #c8d8cc;
+}
+.account-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.account-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #d4eadd;
+  font-size: 0.875rem;
+}
+.account-name {
+  font-size: 0.875rem;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sign-out-control {
+  position: relative;
+}
+.sign-out-control .account-error {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  width: 240px;
+  z-index: 2;
+}
+.weddings-main {
+  max-width: 1180px;
+  margin: auto;
+  padding: 56px 36px 64px;
+}
+.weddings-main h1 {
+  font-size: 48px;
+  letter-spacing: -1px;
+  margin: 14px 0;
+}
+.weddings-intro {
+  color: #5d6d65;
+}
+.weddings-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0 22px;
+}
+.weddings-section-title h2 {
+  font-size: 27px;
+}
+.weddings-section-title > span {
+  font-size: 0.875rem;
+  color: #5d6d65;
+}
+.weddings-empty {
+  background: white;
+  border: 1px solid #dce8e0;
+  border-radius: 18px;
+  padding: 60px 28px;
+  text-align: center;
+}
+.empty-icon {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #e5f0e8;
+  margin: 0 auto 24px;
+}
+.empty-icon .m-icon {
+  width: 32px;
+  height: 32px;
+}
+.weddings-empty h2 {
+  font-size: 36px;
+  margin: 16px 0;
+}
+.weddings-empty p {
+  max-width: 590px;
+  margin: 0 auto 16px;
+  color: #5d6d65;
+}
+.weddings-empty .account-button {
+  margin-top: 16px;
+}
+.weddings-privacy {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: #5d6d65;
+  font-size: 0.875rem;
+  padding: 24px 0 0;
+}
+.wedding-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+.wedding-card {
+  background: white;
+  border: 1px solid #dce8e0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.wedding-card-cover {
+  padding: 32px;
+  min-height: 140px;
+  background: #dfeee4;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.wedding-card-cover > .m-icon {
+  width: 60px;
+  height: 60px;
+  color: #638170;
+}
+.account-pill {
+  background: white;
+  font-size: 0.875rem;
+  border-radius: 20px;
+  padding: 5px 12px;
+}
+.wedding-card-body {
+  padding: 28px;
+}
+.wedding-card-body h2 {
+  font-size: 30px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.wedding-card-body p {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #5d6d65;
+  margin: 20px 0;
+}
+.wedding-card-body small {
+  color: #5d6d65;
+  font-size: 0.75rem;
+}
+.account-failure {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  padding: 40px;
+  text-align: center;
+}
+.account-failure h1 {
+  font-size: 36px;
+}
+@media (max-width: 1000px) {
+  .login-main {
+    gap: 40px;
+  }
+  .login-story h1 {
+    font-size: 54px;
+  }
+  .login-card {
+    padding: 32px 24px;
+  }
+}
+@media (max-width: 760px) {
+  .account-header {
+    padding: 20px;
+  }
+  .account-brand > div {
+    font-size: 21px;
+  }
+  .account-brand small {
+    font-size: 8px;
+  }
+  .login-main {
+    grid-template-columns: 1fr;
+    padding: 40px 24px;
+    gap: 40px;
+    max-width: 560px;
+  }
+  .login-story h1 {
+    font-size: 52px;
+  }
+  .login-illustration {
+    display: none;
+  }
+  .login-story .story-note {
+    margin-top: 20px;
+  }
+  .login-card {
+    padding: 32px 24px;
+  }
+  .account-footer {
+    padding: 24px;
+    flex-wrap: wrap;
+  }
+  .account-header-right .account-name,
+  .account-header-right .account-avatar {
+    display: none;
+  }
+  .weddings-main {
+    padding: 36px 24px;
+  }
+  .wedding-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 400px) {
+  .account-brand > div {
+    font-size: 18px;
+  }
+  .account-brand > span {
+    width: 30px;
+    height: 30px;
+    font-size: 23px;
+  }
+  .account-brand small {
+    font-size: 6px;
+  }
+  .account-header {
+    gap: 12px;
+    padding: 16px;
+  }
+  .account-header > .account-text-link {
+    font-size: 0.75rem;
+  }
+  .login-main {
+    padding: 32px 20px;
+  }
+  .login-story h1 {
+    font-size: 48px;
+  }
+  .login-card {
+    padding: 28px 20px;
+  }
+  .login-card h2 {
+    font-size: 32px;
+  }
+  .weddings-main h1 {
+    font-size: 42px;
+  }
+  .weddings-empty {
+    padding: 36px 20px;
+  }
+  .weddings-empty h2 {
+    font-size: 30px;
+  }
+}
