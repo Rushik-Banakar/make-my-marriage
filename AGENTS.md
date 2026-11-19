@@ -1,6 +1,8 @@
 ﻿# Repository guidance
 
 - Read the relevant design documents in `docs/` before making feature or contract changes.
+- Read `docs/PROJECT_STATUS.md` before starting feature work to understand completed work, current scope, and remaining work. The PRD, system, database, and API design documents remain authoritative for requirements.
+- Update `docs/PROJECT_STATUS.md` when delivering a major new feature or materially changing an existing feature's completion status. Record the date, status, delivered scope, verification results, and remaining limitations or follow-up work. Preserve completed milestones, distinguish sample UI from working backend functionality, and include commit references when available. Do not mark unverified or unfinished work complete.
 - Keep this repository as one Next.js modular monolith. Use `@/*` for imports rooted in `src/`.
 - Reserve `(public)` for public pages, `(auth)` for authentication pages, `(organizer)` for signed-in wedding management, and `(guest)` for invitation and gallery flows. Route groups share the same URL namespace, so each URL needs one owner.
 - Place application Route Handlers under `src/app/api/v1/` and reserve `src/app/api/auth/[...all]/` for Better Auth.
