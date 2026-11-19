@@ -1,10 +1,12 @@
-﻿export default function Home() {
-  return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-4 px-6 py-16">
-      <h1 className="text-4xl font-semibold tracking-tight">Make My Marriage</h1>
-      <p className="text-lg text-muted-foreground">
-        A planning workspace for Indian weddings.
-      </p>
-    </main>
-  );
+import type { Metadata } from "next";
+import { Homepage } from "@/components/marketing/homepage";
+
+export const metadata: Metadata = {
+  title: "Make My Marriage — Your wedding. Your people. One plan.",
+  description:
+    "A shared planning workspace for Indian weddings. Explore ceremonies, tasks, budgets, and event-specific invitations in our sample wedding preview.",
+};
+
+export default function Home() {
+  return <Homepage />;
 }
