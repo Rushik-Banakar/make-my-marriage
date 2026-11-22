@@ -1,9 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
-const authDependencies = vi.hoisted(() => ({ getSession: vi.fn() }));
+const authDependencies = vi.hoisted(() => ({
+  getSession: vi.fn(),
+  configure: vi.fn(),
+  options: undefined as {
+    socialProviders: { google: { mapProfileToUser: (profile: unknown) => unknown } };
+    account: { accountLinking: { requireLocalEmailVerified: boolean } };
+  } | undefined,
+}));
 vi.mock("better-auth", () => ({
-  betterAuth: () => ({ api: { getSession: authDependencies.getSession } }),
+  betterAuth: (options: unknown) => {
+    authDependencies.configure(options);
+    authDependencies.options = options as typeof authDependencies.options;
+    return { api: { getSession: authDependencies.getSession } };
+  },
 }));
 vi.mock("@better-auth/mongo-adapter", () => ({ mongodbAdapter: () => ({}) }));
 vi.mock("@/lib/db/mongodb", () => ({
@@ -29,6 +40,13 @@ describe("server session resolution", () => {
     });
     authDependencies.getSession.mockResolvedValue(null);
     expect(await getSession(headers)).toBeNull();
+    expect(authDependencies.configure).toHaveBeenCalledWith(
+      expect.objectContaining({
+        socialProviders: {
+          google: expect.objectContaining({ disableImplicitSignUp: true }),
+        },
+      }),
+    );
     expect(authDependencies.getSession).toHaveBeenCalledWith({
       headers,
       query: { disableCookieCache: true },
@@ -38,5 +56,20 @@ describe("server session resolution", () => {
     vi.stubEnv("BETTER_AUTH_SECRET", "");
     expect(await getSession(new Headers())).toBeNull();
     expect(authDependencies.getSession).not.toHaveBeenCalled();
+  });
+  it("requires a valid, Google-verified email before account resolution", async () => {
+    await getSession(new Headers());
+    const options = authDependencies.options!;
+    const map = options.socialProviders.google.mapProfileToUser;
+    expect(map({ email: "user@example.com", email_verified: true })).toEqual({});
+    for (const profile of [
+      { email: "user@example.com", email_verified: false },
+      { email: "user@example.com", email_verified: "true" },
+      { email: "invalid-address", email_verified: true },
+      { email_verified: true },
+    ]) {
+      expect(map(profile)).toEqual({ email: "", emailVerified: false });
+    }
+    expect(options.account.accountLinking.requireLocalEmailVerified).toBe(true);
   });
 });

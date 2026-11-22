@@ -227,6 +227,12 @@ html:has(.landing) {
   padding-block: 12px;
   color: #435b50;
 }
+.landing .header-actions {
+  gap: 8px;
+}
+.landing .header-actions .cta {
+  white-space: nowrap;
+}
 .landing .desktop-nav a:hover,
 .landing .header-faq:hover {
   color: var(--green);
@@ -1357,6 +1363,9 @@ html:has(.landing) {
   }
 }
 @media (max-width: 800px) {
+  .landing .header-sign-in {
+    display: none;
+  }
   .landing .container {
     width: calc(100% - 40px);
   }
@@ -1805,11 +1814,23 @@ html:has(.landing) {
   }
 }
 @media (max-width: 360px) {
-  .landing .header-inner { padding-inline: 10px; gap: 3px; }
-  .landing .brand strong { font-size: 16px; }
-  .landing .brand small { font-size: 5px; }
-  .landing .header-actions .cta { white-space: nowrap; font-size: 9px; }
-  .landing .hero-copy h1 { font-size: 44px; }
+  .landing .header-inner {
+    padding-inline: 10px;
+    gap: 3px;
+  }
+  .landing .brand strong {
+    font-size: 16px;
+  }
+  .landing .brand small {
+    font-size: 5px;
+  }
+  .landing .header-actions .cta {
+    white-space: nowrap;
+    font-size: 9px;
+  }
+  .landing .hero-copy h1 {
+    font-size: 44px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   html:has(.landing) {

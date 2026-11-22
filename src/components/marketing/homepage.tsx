@@ -138,7 +138,7 @@ const faqs = [
   ],
   [
     "Can I use this preview to plan my own wedding?",
-    "This homepage currently contains a read-only sample wedding. The names, figures, and events are illustrative. Account creation and wedding management will be introduced as the application is developed.",
+    "The sample wedding is read-only and uses illustrative names, figures, and events. Sign up with your email, then log in to open My Weddings.",
   ],
 ];
 
@@ -157,8 +157,11 @@ export function Homepage() {
             <a href="#demo">Sample Workspace</a>
           </nav>
           <div className="header-actions">
-            <a className="header-sign-in" href="/login">
-              Sign in
+            <a className="cta compact secondary" href="/login">
+              Log in
+            </a>
+            <a className="cta compact" href="/signup">
+              Sign up
             </a>
             <a className="header-faq" href="#faq">
               FAQs

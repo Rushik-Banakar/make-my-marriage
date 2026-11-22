@@ -227,6 +227,15 @@
 .google-control {
   margin-top: 30px;
 }
+.account-switch {
+  margin-top: 24px !important;
+  font-size: 0.875rem;
+  color: #5d6d65;
+}
+.login-card > .account-text-link {
+  display: inline-block;
+  margin-top: 24px;
+}
 .google-button {
   width: 100%;
   min-height: 54px;
@@ -574,4 +583,77 @@
   .weddings-empty h2 {
     font-size: 30px;
   }
+}
+.credentials-form fieldset {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+}
+.credentials-form label {
+  display: grid;
+  gap: 5px;
+  font-size: 0.875rem;
+  font-weight: 650;
+  text-align: left;
+}
+.credentials-form input {
+  min-width: 0;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #b9c9bf;
+  border-radius: 8px;
+  background: white;
+  color: #203b30;
+  font-weight: 400;
+}
+.credentials-form input:focus-visible {
+  outline: 2px solid #417060;
+  outline-offset: 1px;
+}
+.credentials-form small {
+  color: #476055;
+}
+.credentials-form .account-button {
+  width: 100%;
+}
+.phone-fields {
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  gap: 12px;
+}
+.account-entry-link {
+  margin-top: 14px;
+  font-size: 0.875rem;
+}
+.account-entry-link a,
+.account-notice a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.password-field {
+  display: grid;
+  gap: 5px;
+}
+.password-input {
+  position: relative;
+}
+.credentials-form .password-input input {
+  padding-inline-end: 48px;
+}
+.password-input input::-ms-reveal {
+  display: none;
+}
+.password-input button {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  border-radius: 8px;
+  color: #35584a;
+  cursor: pointer;
 }

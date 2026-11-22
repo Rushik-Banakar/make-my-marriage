@@ -3,36 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
+import { startGoogleAuthentication } from "@/lib/auth/google-flow";
 
 export function GoogleSignIn({
   available,
-  hasError,
 }: {
   available: boolean;
-  hasError: boolean;
 }) {
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState(
-    hasError
-      ? "We couldn’t complete your sign-in. Please try again and choose your Google account."
-      : "",
-  );
+  const [error, setError] = useState("");
 
   async function signIn() {
     setPending(true);
     setError("");
     try {
-      const result = await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "/weddings",
-        errorCallbackURL: "/login?error=sign_in_failed",
-      });
-      if (result.error || !result.data?.url) {
-        setError("Sign-in couldn’t start. Please try again in a moment.");
-        setPending(false);
-      }
+      await startGoogleAuthentication();
     } catch {
-      setError("We couldn’t connect. Check your connection and try again.");
+      setError("We couldn’t start Google authentication. Please try again shortly.");
       setPending(false);
     }
   }
@@ -75,11 +62,8 @@ export function GoogleSignIn({
             d="M12 5.96c1.47 0 2.79.5 3.82 1.49l2.86-2.86A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.94 5.46l3.34 2.6A5.99 5.99 0 0 1 12 5.96Z"
           />
         </svg>
-        {pending ? "Connecting to Google…" : "Continue with Google"}
+        {pending ? "Opening Google…" : "Log in with Google"}
       </button>
-      <p className="account-secondary">
-        New here? Your first sign-in creates your account.
-      </p>
     </div>
   );
 }

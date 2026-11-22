@@ -1,14 +1,14 @@
 # Make My Marriage project status
 
-Last updated: 19 November 2026
+Last updated: 22 November 2026
 
 This file tracks delivered features and the project's current state. Read it before starting feature work and update it when a major feature is delivered or its status materially changes.
 
 ## Current state
 
-The application scaffold and public homepage are complete within their stated scope. The homepage is a responsive web experience with illustrative, read-only wedding data. Google authentication and the protected My Weddings entry page are implemented locally; the live Google login, persisted session, empty membership list, and sign-out journey have been verified with development credentials. Code review identified an unresolved session-cookie refresh issue, so the authentication milestone remains in progress. Additional expiry and multi-account isolation checks remain pending. Persisted wedding creation and the other business workflows remain unimplemented.
+The application scaffold and responsive public homepage are complete within their stated scope. The homepage shows illustrative, read-only wedding data and offers separate Sign up and Log in actions. Local authentication supports verified email/password registration, password or Google login, and email-code password recovery. Signed-in users can open My Weddings and view their own active memberships. Persisted wedding creation and the other wedding workflows remain unimplemented.
 
-The latest committed feature is `9243f0e` (homepage); the status-tracking documentation was committed as `f8497da` on `dev` and pushed to `origin/dev`. Authentication changes described below are not committed yet. Deployment to a hosted environment has not been verified.
+The latest committed feature is `b3a100a` (Google authentication and protected My Weddings) on `dev`. Later registration, account-entry, and recovery changes are in the working tree. Resend confirmed delivery of a local reset code to the configured test inbox. Hosted registration and recovery, the revised Google account-linking callback, and live session expiry and account isolation remain unverified. Authentication remains in progress.
 
 ## Scope references
 
@@ -44,16 +44,16 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
   - Responsive desktop, tablet, and phone-browser layouts.
   - Working Overview, Tasks, and Expenses preview controls using illustrative, read-only data.
   - Smooth in-page navigation with reduced-motion support, collapsible mobile navigation, expandable FAQs, and keyboard focus styling.
-  - Reduced repeated workspace calls to action: navigation and hero entry points only.
+  - Separate Sign up and Log in actions in the header and sample-workspace links in the hero.
   - MVP-aligned wording for couple co-ownership, organizer permissions, recorded INR expenses, per-person/event RSVP, and manual invitation sharing.
 - **Verified:** `npm run lint`, `npm run typecheck`, and `npm run build` passed. The homepage returned HTTP 200. Browser checks covered preview controls, FAQs, section links, mobile navigation, and responsive widths; no console errors or broken section links were found. Smooth scrolling and section landing positions were checked after the navigation changes. A separate read-only review found no actionable issues.
-- **Boundary:** This is not a functional wedding-management dashboard. The previews do not persist changes or enforce backend permissions. Sign-in, wedding creation, invitation delivery, actual RSVP submission, expense exports, and private gallery access remain future work. Automated WhatsApp reminders, receipt capture, vendor reconciliation, and QR entry were not added.
+- **Boundary:** The homepage previews are illustrative and read-only. Account access is documented below. Wedding creation, invitation delivery, RSVP submission, expense exports, and private gallery access remain future work.
 
 ### 3. Google sign-in and protected My Weddings entry
 
 - **Status:** In progress — implementation, local checks, and the core live Google/MongoDB journey verified; session-cookie refresh fix and additional expiry/multi-account isolation checks pending.
 - **Progress recorded:** 19 November 2026.
-- **Commit:** Not committed yet.
+- **Commit:** `b3a100a` — Add Google authentication and protected My Weddings. Account-entry and recovery changes below are in the working tree.
 - **Visual references:** Stitch Login & Sign Up desktop screen `2a4afe4273454d29b4ac5ad7a9917447` and My Weddings desktop screen `dbc8929e4a604fa2be2ca57ed9430161` in the existing project.
 - **Delivered:**
   - Responsive `/login` with Google sign-in, loading/error feedback, and a disabled sign-in state when configuration is missing. Homepage navigation now links to sign-in.
@@ -68,11 +68,71 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
 - **Review:** A read-only subagent review against `origin/dev` at `f8497da` covered staged, unstaged, and untracked changes. It reported one P2 issue in `src/lib/auth/server.ts`, `getSession`: server-side session reads can extend the database expiry without delivering the refreshed cookie to the browser. An active user can therefore be signed out when the original seven-day browser cookie expires. No additional actionable findings were reported. The current code still contains this issue; no fix or re-review has been completed.
 - **Follow-up:** Implement a browser-capable session refresh path and propagate refresh cookies from application API responses, then test renewal across the update interval. Finish the remaining session and account-isolation checks in [AUTH_SETUP.md](AUTH_SETUP.md) before marking this milestone complete. Email OTP, profile editing, wedding creation, invitation acceptance, and dashboard entry are separate increments.
 
+#### Single Google account-entry refinement (superseded)
+
+- **Status:** Implemented locally; full provider round-trip for the revised registration flow is pending.
+- **Progress recorded:** 19 November 2026.
+- **Delivered:** One homepage account action, Get started, opens `/signup`. The account page contains one Continue with Google button for both new and returning users. The separate Sign in/Create account switching links were removed at the user's request, superseding the earlier two-page refinement. `/login` remains a compatibility redirect to `/signup`; sign-out, protected-page redirects, and provider errors use the single account page. Explanatory copy is kept minimal.
+- **Behavior:** The sole Google action explicitly passes `requestSignUp: true`, allowing a new account to be created after Google verification while existing accounts sign in normally. No wedding ownership is granted by authentication. Successful authentication leads to My Weddings.
+- **Verified:** 30 automated tests passed, including single-button rendering without circular account links, legacy-login redirects with a safe error flag, protected-page redirects, Google registration intent, provider configuration, and rejection of missing/error/unexpected authorization URLs. Browser checks verified Get started opens `/signup`, the account card has no links to `/login` or itself, and `/login` redirects to `/signup`. The earlier Google-button browser check reached Google's account screen. Lint, type checking, and production build passed for the refinement.
+- **Navigation:** The client explicitly navigates to the Google URL returned by Better Auth with SDK automatic redirects disabled. Errors return to the same account page. Google authentication uses the current browser tab rather than a popup.
+- **Limit:** The simplified entry page and redirect behavior were tested; a fresh account completing the revised provider callback has not been observed. The live checklist in [AUTH_SETUP.md](AUTH_SETUP.md) covers new and returning accounts using the same action. The earlier session-cookie refresh review finding remains unresolved.
+
+#### Separate Google signup and login (superseded)
+
+- **Status:** Implemented locally. Live callback verification remains pending.
+- **Progress recorded:** 21 November 2026.
+- **Delivered:** One Sign up and one Log in action on the homepage, with a purpose-specific Google button on each account page. Login uses the existing Google identity and disables implicit signup. Signup allows new accounts. Both require a valid email marked verified by Google. Implicit linking by email is disabled. Signed-out visitors to My Weddings and users signing out return to login.
+- **Verified:** Lint, type checking, production build, and 32 automated tests passed. Local HTTP checks confirmed both homepage links, both account pages, successful Google authorization URL responses for both paths, and the anonymous My Weddings redirect to login.
+- **Remaining:** Complete the revised Google callbacks with a new and a returning test account, including rejection of an unregistered Google identity on the login path. The session-cookie refresh issue and live expiry and account-isolation checks remain open.
+
+#### Email registration and password or Google login
+
+- **Status:** Implemented locally, with hosted verification pending.
+- **Progress recorded:** 21 November 2026.
+- **Delivered:** Registration collects a name, email, contact phone with country code, and password. Better Auth requires mailbox verification before issuing a password session. Login accepts the registered password or the matching verified Gmail or Google Workspace identity. Existing Google-linked users can continue to log in. Phone details are omitted from authentication responses.
+- **Verified:** An isolated Better Auth integration test exercised registration validation, verification, password rejection, and verified session issuance using a memory database and mocked email delivery. Local HTTP smoke checks verified both forms, Google redirect initiation, and delivery to the local Mailpit inbox.
+- **Remaining:** Configure a sender for real inbox delivery before enabling hosted registration, and verify the live Google callback for newly registered and existing users. Phone ownership verification and the existing session-renewal follow-up remain open.
+
+#### Registration validation and password recovery
+
+- **Status:** Implemented locally. Hosted email delivery remains pending.
+- **Progress recorded:** 21 November 2026.
+- **Delivered:** Separate country code and phone fields are combined for storage. Signup checks email syntax on the client and server, and a new password account needs mailbox verification. The registered mailbox receives an already-member notice for a verified duplicate. Password recovery verifies the six-digit email code before opening the password form and checks it again during reset. Codes expire after five minutes, allow three verification attempts, and are stored hashed. Reset revokes old sessions.
+- **Verified:** Automated checks covered malformed email rejection, duplicate notification, the same public response for known and unknown reset emails, invalid and reused code rejection, successful code checking before password replacement, and session revocation. Local smoke checks confirmed the pages no longer link to the test inbox.
+- **Local delivery:** Configured a sending-only Resend key in the ignored local environment with Mailpit disabled. The local reset API accepted a request and Resend reported delivery to the authorized test inbox.
+- **Password length:** Removed the 12-character minimum from signup and reset. Empty passwords are still rejected and the 128-character maximum remains. The integration test signs up with a one-character password and resets it to a different one-character password.
+- **Remaining:** Verify the user-completed password change after real email delivery. Hosted delivery to general recipients still requires a verified sender domain.
+
+#### Existing-account signup feedback
+
+- **Status:** Complete — local duplicate-signup feedback; overall authentication remains in progress.
+- **Progress recorded:** 22 November 2026.
+- **Delivered:** Signup now rejects an existing email with an explicit already-exists result and shows “An account already exists with this email. Please log in.” with a login link. This applies to verified and unverified accounts and compares email addresses without case sensitivity. It replaces the previous generic check-email response and already-member notification email. New registrations retain email verification. Password recovery continues to use uniform responses for known and unknown addresses.
+- **Verification:** All 32 tests passed. The Better Auth integration test covers new registration, verified and unverified duplicate rejection, uppercase duplicate detection, no duplicate session or notification email, and the existing login/recovery flow. Local browser verification confirmed the duplicate message and working login link. Lint, type checking, and the production build passed.
+- **Boundary:** The requested signup response intentionally distinguishes existing from new email addresses. Existing mailbox-verification requirements still apply; this change does not sign anyone in.
+
+#### Current code review
+
+- **Reviewed:** 21 November 2026. Review covered tracked changes and new authentication files in the working tree.
+- **P1, public release:** Signup and recovery accept one-character passwords. Local tests intentionally exercise this policy. Require a stronger minimum before hosted password authentication and plan recovery for accounts already using very short passwords.
+- **P2, session renewal:** Protected pages and application API routes use a session read that can extend expiry in MongoDB and discard the refreshed cookie header. Add a browser-facing renewal path and verify renewal across the update interval.
+- **P2, recovery delivery:** Reset requests are rate-limited by source IP and route. Add a recipient-level cooldown so requests from multiple sources cannot flood one inbox or supersede a code while the member is entering it.
+- **P2, hosted sender configuration:** The test sender satisfies the app's delivery configuration check even on the hosted runtime. It can send only to the Resend account inbox. Validate the hosted sender configuration and verify delivery to a separate test address before publishing signup and reset.
+
+### Local QA pass — 21 November 2026
+
+- **Status:** Authentication remains in progress; local verification coverage expanded. No application fixes were made during this testing pass.
+- **Verified:** Browser registration and email-link verification using temporary synthetic local email capture, verified password login with uppercase email, duplicate-member notification, existing Google login and cancellation/retry, My Weddings empty state, reload persistence, sign-out and protected-page redirects. Live API checks covered anonymous/forged-cookie rejection, invalid-origin rejection, registration validation, code replacement/reuse, password replacement on a disposable account, and revocation of a session issued before that reset. A fresh reset message was confirmed in the connected Gmail inbox.
+- **Finding:** New registration using a Gmail alias under the original Resend configuration showed the check-email notice, but verification delivery failed on the server and no Gmail message was found. General-recipient delivery remains blocked by sender configuration. Synthetic capture verifies application flow, not external delivery.
+- **Checks:** 32 tests passed; lint, type checking, and production build passed. Original local environment restored byte-for-byte, temporary email sink stopped, and browser sessions signed out. Two test registrations remain in the development database with no wedding memberships.
+- **Limits:** Hosted flows, Google/password linking, timed expiry, independent OTP attempt exhaustion, session renewal, populated account isolation, manual reset confirmation, and exact 320/390-pixel coverage remain unverified in this pass. See [the detailed QA report](QA_REPORT_2026-11-21.md) for case-level outcomes, screenshot evidence, release findings, and remaining coverage.
+
 ## Remaining work
 
-The current feature is Google sign-in and the protected My Weddings entry page. Resolve its review finding and finish the remaining live checks first. The following work remains; detailed scope and sequencing must follow the four design documents:
+Close the session-renewal issue and complete the account access checks. The next product increment is Create a Wedding from My Weddings, with a persisted draft and initial Admin membership. Follow it with second co-owner onboarding, then events and the private dashboard. The design documents govern implementation scope and sequencing.
 
-- Session-cookie refresh fix and renewal test; remaining session-expiry, administrative revocation, and multi-account isolation checks; account/profile and development-only email OTP requirements.
+- Session-cookie refresh fix and renewal test, session-expiry and administrative revocation checks, multi-account isolation, and remaining account/profile and development-only OTP login requirements.
 - Wedding creation, wedding switching, co-owner onboarding, and server-enforced membership/permissions.
 - Persisted events, itinerary, tasks, and task templates.
 - Persisted budgets, expenses, reports, and authorized exports.
