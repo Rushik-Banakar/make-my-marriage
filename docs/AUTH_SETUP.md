@@ -10,6 +10,20 @@ Create a database user scoped to the development database with read/write and in
 
 Copy `.env.example` to `.env.local` in the project root. Set `DATABASE_URL` to the connection string and `DATABASE_NAME` to the development database name. Keep credentials URL-encoded in the connection string. Never commit `.env.local` or paste it into chat.
 
+### Recurring unavailable login / signup
+
+Run `npm run auth:check` from the project root. It checks required configuration and attempts an encrypted database connection and ping without printing secrets. A successful ping does not verify Google callbacks, database write permissions, or email delivery.
+
+On 24 November 2026, the local app logged MongoDB TLS failures followed by `MongoTopologyClosedError`. Atlas independently showed **Current IP Address not added**. Both existing IP rules were active; the current network used a different public IP. Waiting 24 hours or changing the authentication provider does not repair this network rule.
+
+In Atlas, open **Database & Network Access → IP Access List**. Allow only the app server's actual outbound IP. A non-temporary `/32` entry does not expire, but it stops covering your machine if your ISP, VPN, hotspot, or office network changes its public IP. Review obsolete rules when the network changes. Never disable certificate validation to work around this error.
+
+The app now explicitly connects before creating the auth adapter and shares that initialization across requests. Failed connections are discarded and auth initialization can retry on the next request. Once network access is restored, reload the login page; an application restart should not be necessary for a failed initial connection. No authentication mutations are replayed automatically.
+
+For local development without Atlas IP rules, the supported alternative is a local MongoDB replica set; it must be running and its data backed up. Switching to a different database does not automatically migrate existing accounts. Hosted Atlas access needs a suitable stable outbound network or an explicitly managed allowlist. Do not open database access to every address as an automatic workaround.
+
+Better Auth runs inside this app without a paid authentication subscription. Keep Atlas on its Free tier. Neither this code nor a provider can guarantee lifetime availability or permanent free-tier terms. Email sending is a separate dependency: the configured `resend.dev` test sender cannot serve arbitrary recipients, and a general-recipient sender still needs appropriate configuration. No paid service was introduced by the connection-recovery fix.
+
 ## 2. Configure Google OAuth
 
 In Google Cloud Console, select or create your development project and configure the OAuth consent screen. If the app is in testing mode, add the Google accounts you intend to use as test users.

@@ -23,8 +23,8 @@ const signup = {
 };
 
 let attempt = 0;
-function post(path: string, data: object) {
-  return getAuth().handler(new Request(`${origin}/api/auth/${path}`, {
+async function post(path: string, data: object) {
+  return (await getAuth()).handler(new Request(`${origin}/api/auth/${path}`, {
     method: "POST",
     headers: { origin, "content-type": "application/json", "x-forwarded-for": `192.0.2.${++attempt}` },
     body: JSON.stringify(data),
@@ -83,7 +83,7 @@ it("validates registration and password recovery against Better Auth", async () 
   expect(beforeVerification.status).toBe(403);
   expect(await beforeVerification.json()).toMatchObject({ code: "EMAIL_NOT_VERIFIED" });
 
-  const verification = await getAuth().handler(new Request(verificationUrl));
+  const verification = await (await getAuth()).handler(new Request(verificationUrl));
   expect(verification.headers.get("location")).toBe("/login?verified=1");
   expect((await post("sign-in/email", { ...login, password: "wrong-test-password" })).status).toBe(401);
   const authenticated = await post("sign-in/email", login);
@@ -126,7 +126,7 @@ it("validates registration and password recovery against Better Auth", async () 
   expect((await post("email-otp/check-verification-otp", check)).ok).toBe(false);
   expect((await post("sign-in/email", login)).status).toBe(401);
   expect((await post("sign-in/email", { ...login, password: reset.password })).status).toBe(200);
-  const revoked = await getAuth().handler(new Request(`${origin}/api/auth/get-session`, {
+  const revoked = await (await getAuth()).handler(new Request(`${origin}/api/auth/get-session`, {
     headers: { cookie: cookie ?? "" },
   }));
   expect(await revoked.json()).toBeNull();

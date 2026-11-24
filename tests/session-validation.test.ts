@@ -4,6 +4,7 @@ vi.mock("server-only", () => ({}));
 const authDependencies = vi.hoisted(() => ({
   getSession: vi.fn(),
   configure: vi.fn(),
+  connect: vi.fn(),
   options: undefined as {
     socialProviders: { google: { mapProfileToUser: (profile: unknown) => unknown } };
     account: { accountLinking: { requireLocalEmailVerified: boolean } };
@@ -18,12 +19,13 @@ vi.mock("better-auth", () => ({
 }));
 vi.mock("@better-auth/mongo-adapter", () => ({ mongodbAdapter: () => ({}) }));
 vi.mock("@/lib/db/mongodb", () => ({
-  getMongoClient: () => ({ db: () => ({}) }),
+  getMongoClient: authDependencies.connect,
 }));
 
-import { getSession } from "@/lib/auth/server";
+let getSession: typeof import("@/lib/auth/server").getSession;
 
-beforeEach(() => {
+beforeEach(async () => {
+  vi.resetModules();
   vi.unstubAllEnvs();
   vi.stubEnv("DATABASE_URL", "mongodb://localhost:27017");
   vi.stubEnv("DATABASE_NAME", "account_test");
@@ -31,16 +33,27 @@ beforeEach(() => {
   vi.stubEnv("BETTER_AUTH_URL", "http://localhost:3000");
   vi.stubEnv("GOOGLE_CLIENT_ID", "test");
   vi.stubEnv("GOOGLE_CLIENT_SECRET", "test");
+  authDependencies.connect.mockResolvedValue({ db: () => ({}) });
+  ({ getSession } = await import("@/lib/auth/server"));
 });
 
 describe("server session resolution", () => {
+  it("retries initialization after a database outage without constructing auth against a broken client", async () => {
+    authDependencies.connect.mockRejectedValueOnce(new Error("temporary connection failure"));
+    await expect(getSession(new Headers())).rejects.toThrow("temporary connection failure");
+    expect(authDependencies.configure).not.toHaveBeenCalled();
+    authDependencies.getSession.mockResolvedValue(null);
+    expect(await getSession(new Headers())).toBeNull();
+    expect(authDependencies.connect).toHaveBeenCalledTimes(2);
+    expect(authDependencies.configure).toHaveBeenCalledTimes(1);
+  });
   it("validates the incoming cookie with the provider and disables cached session claims", async () => {
     const headers = new Headers({
       cookie: "better-auth.session_token=untrusted",
     });
     authDependencies.getSession.mockResolvedValue(null);
     expect(await getSession(headers)).toBeNull();
-    expect(authDependencies.configure).toHaveBeenCalledWith(
+    expect(authDependencies.options).toEqual(
       expect.objectContaining({
         socialProviders: {
           google: expect.objectContaining({ disableImplicitSignUp: true }),

@@ -10,10 +10,10 @@ import { getMongoClient } from "@/lib/db/mongodb";
 import { emailSchema, nameSchema, passwordMaxLength, phoneSchema, resetOtpLength, resetOtpMinutes } from "@/lib/auth/credentials";
 import { getVerificationDelivery, sendAccountVerification, sendAuthEmail } from "@/lib/auth/verification-email";
 
-function createAuth() {
+async function createAuth() {
   const config = readAuthEnvironment();
   if (!config) throw new Error("Authentication configuration unavailable");
-  const client = getMongoClient(config);
+  const client = await getMongoClient(config);
   const verificationDelivery = getVerificationDelivery();
   return betterAuth({
     appName: "Make My Marriage",
@@ -134,12 +134,19 @@ function createAuth() {
 
 let auth: ReturnType<typeof createAuth> | undefined;
 export function getAuth() {
-  return (auth ??= createAuth());
+  if (!auth) {
+    const initialization = createAuth().catch((error: unknown) => {
+      if (auth === initialization) auth = undefined;
+      throw error;
+    });
+    auth = initialization;
+  }
+  return auth;
 }
 
 export async function getSession(requestHeaders: Headers) {
   if (!readAuthEnvironment()) return null;
-  return getAuth().api.getSession({
+  return (await getAuth()).api.getSession({
     headers: requestHeaders,
     query: { disableCookieCache: true },
   });

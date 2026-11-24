@@ -1,6 +1,6 @@
 # Make My Marriage project status
 
-Last updated: 22 November 2026
+Last updated: 24 November 2026
 
 This file tracks delivered features and the project's current state. Read it before starting feature work and update it when a major feature is delivered or its status materially changes.
 
@@ -8,7 +8,7 @@ This file tracks delivered features and the project's current state. Read it bef
 
 The application scaffold and responsive public homepage are complete within their stated scope. The homepage shows illustrative, read-only wedding data and offers separate Sign up and Log in actions. Local authentication supports verified email/password registration, password or Google login, and email-code password recovery. Signed-in users can open My Weddings and view their own active memberships. Persisted wedding creation and the other wedding workflows remain unimplemented.
 
-The latest committed feature is `b3a100a` (Google authentication and protected My Weddings) on `dev`. Later registration, account-entry, and recovery changes are in the working tree. Resend confirmed delivery of a local reset code to the configured test inbox. Hosted registration and recovery, the revised Google account-linking callback, and live session expiry and account isolation remain unverified. Authentication remains in progress.
+The latest committed feature is `50de657` (registration and existing-account feedback) on `dev`. The connection-recovery changes recorded below are in the working tree. Resend confirmed delivery of a local reset code to the configured test inbox. Hosted registration and recovery, the revised Google account-linking callback, and live session expiry and account isolation remain unverified. Authentication remains in progress.
 
 ## Scope references
 
@@ -111,6 +111,15 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
 - **Delivered:** Signup now rejects an existing email with an explicit already-exists result and shows “An account already exists with this email. Please log in.” with a login link. This applies to verified and unverified accounts and compares email addresses without case sensitivity. It replaces the previous generic check-email response and already-member notification email. New registrations retain email verification. Password recovery continues to use uniform responses for known and unknown addresses.
 - **Verification:** All 32 tests passed. The Better Auth integration test covers new registration, verified and unverified duplicate rejection, uppercase duplicate detection, no duplicate session or notification email, and the existing login/recovery flow. Local browser verification confirmed the duplicate message and working login link. Lint, type checking, and the production build passed.
 - **Boundary:** The requested signup response intentionally distinguishes existing from new email addresses. Existing mailbox-verification requirements still apply; this change does not sign anyone in.
+
+#### Database connection recovery — 24 November 2026
+
+- **Status:** Complete for the observed local database-access failure and failed-initialization recovery; overall authentication remains in progress.
+- **Diagnosis:** Local logs showed MongoDB TLS handshake failures followed by a permanently closed topology. Atlas showed that the current public IP was missing while the two existing IP entries were active. A separate encrypted database connection check reproduced the TLS failure. This is a network-access dependency failure, not a 24-hour authentication allowance.
+- **Delivered:** Explicit shared database connection initialization before auth adapter construction, failed-client cleanup, retryable auth initialization on later requests, removal of the driver's ignored `timeoutMS` setting, and a secret-safe `npm run auth:check` diagnostic. No paid service added; TLS certificate validation remains enabled.
+- **Verification:** 34 automated tests passed, including failed connection cleanup, concurrent initialization sharing, recovery on a later request, and auth initialization retry. Lint and type checking passed. The default production build hit a Turbopack CSS-worker crash both inside and outside the sandbox; `npm run build -- --webpack` passed. After explicit user approval, the current public IP was added as a non-temporary single-address Atlas rule and showed Active. The encrypted database connection and ping passed. Browser checks confirmed password login with the existing synthetic account, refresh persistence, sign-out, enabled signup, duplicate-account feedback and its login link, and the existing real Google account completing login to My Weddings. Both browser test sessions were signed out. No new accounts were created in this pass. See [login evidence](qa-evidence/auth-restored-2026-11-24.jpg).
+- **Review:** A separate read-only reviewer checked staged, unstaged, and untracked changes against `origin/dev` at `50de657d97ea12c15e98ad35703f47f7d7becff8` on 24 November 2026. No actionable regressions were found and `git diff --check` passed. This review did not rerun tests or builds and does not close the earlier authentication findings.
+- **Remaining:** Non-temporary IP rules do not cover future ISP/VPN IP changes; a stable network or a local replica set is required to avoid this dependency. General-recipient email delivery, session renewal, and the other existing authentication follow-ups remain open. Newly delivered verification/reset emails were not tested in this pass. No lifetime availability or permanent free-tier guarantee is made.
 
 #### Current code review
 

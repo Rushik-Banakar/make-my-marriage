@@ -13,7 +13,7 @@ async function handle(request: Request) {
       "Sign-in is temporarily unavailable.",
     );
   try {
-    const handlers = toNextJsHandler(getAuth());
+    const handlers = toNextJsHandler(await getAuth());
     const response = await (request.method === "GET"
       ? handlers.GET(request)
       : handlers.POST(request));
