@@ -8,7 +8,7 @@ This file tracks delivered features and the project's current state. Read it bef
 
 The application scaffold and responsive public homepage are complete within their stated scope. The homepage shows illustrative, read-only wedding data and offers separate Sign up and Log in actions. Local authentication supports verified email/password registration, password or Google login, and email-code password recovery. Signed-in users can open My Weddings and view their own active memberships. Persisted wedding creation and the other wedding workflows remain unimplemented.
 
-The latest committed feature is `50de657` (registration and existing-account feedback) on `dev`. The connection-recovery changes recorded below are in the working tree. Resend confirmed delivery of a local reset code to the configured test inbox. Hosted registration and recovery, the revised Google account-linking callback, and live session expiry and account isolation remain unverified. Authentication remains in progress.
+The latest committed feature is `3818862` (authentication database connection recovery) on `dev`, following `50de657` (registration and existing-account feedback). Both are pushed to `origin/dev`. Resend confirmed delivery of a local reset code to the configured test inbox. Hosted registration and recovery, Google/password account linking, and live session expiry and account isolation remain unverified. Authentication remains in progress. Wedding creation remains not started in the active codebase, pending planning and an approved Stitch design.
 
 ## Scope references
 
@@ -53,7 +53,7 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
 
 - **Status:** In progress — implementation, local checks, and the core live Google/MongoDB journey verified; session-cookie refresh fix and additional expiry/multi-account isolation checks pending.
 - **Progress recorded:** 19 November 2026.
-- **Commit:** `b3a100a` — Add Google authentication and protected My Weddings. Account-entry and recovery changes below are in the working tree.
+- **Commits:** `b3a100a` — Add Google authentication and protected My Weddings; `50de657` — registration and existing-account feedback; `3818862` — database connection recovery.
 - **Visual references:** Stitch Login & Sign Up desktop screen `2a4afe4273454d29b4ac5ad7a9917447` and My Weddings desktop screen `dbc8929e4a604fa2be2ca57ed9430161` in the existing project.
 - **Delivered:**
   - Responsive `/login` with Google sign-in, loading/error feedback, and a disabled sign-in state when configuration is missing. Homepage navigation now links to sign-in.
@@ -115,6 +115,7 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
 #### Database connection recovery — 24 November 2026
 
 - **Status:** Complete for the observed local database-access failure and failed-initialization recovery; overall authentication remains in progress.
+- **Commit:** `3818862` — Recover authentication after database connection failures; pushed to `origin/dev`.
 - **Diagnosis:** Local logs showed MongoDB TLS handshake failures followed by a permanently closed topology. Atlas showed that the current public IP was missing while the two existing IP entries were active. A separate encrypted database connection check reproduced the TLS failure. This is a network-access dependency failure, not a 24-hour authentication allowance.
 - **Delivered:** Explicit shared database connection initialization before auth adapter construction, failed-client cleanup, retryable auth initialization on later requests, removal of the driver's ignored `timeoutMS` setting, and a secret-safe `npm run auth:check` diagnostic. No paid service added; TLS certificate validation remains enabled.
 - **Verification:** 34 automated tests passed, including failed connection cleanup, concurrent initialization sharing, recovery on a later request, and auth initialization retry. Lint and type checking passed. The default production build hit a Turbopack CSS-worker crash both inside and outside the sandbox; `npm run build -- --webpack` passed. After explicit user approval, the current public IP was added as a non-temporary single-address Atlas rule and showed Active. The encrypted database connection and ping passed. Browser checks confirmed password login with the existing synthetic account, refresh persistence, sign-out, enabled signup, duplicate-account feedback and its login link, and the existing real Google account completing login to My Weddings. Both browser test sessions were signed out. No new accounts were created in this pass. See [login evidence](qa-evidence/auth-restored-2026-11-24.jpg).
@@ -136,6 +137,10 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
 - **Finding:** New registration using a Gmail alias under the original Resend configuration showed the check-email notice, but verification delivery failed on the server and no Gmail message was found. General-recipient delivery remains blocked by sender configuration. Synthetic capture verifies application flow, not external delivery.
 - **Checks:** 32 tests passed; lint, type checking, and production build passed. Original local environment restored byte-for-byte, temporary email sink stopped, and browser sessions signed out. Two test registrations remain in the development database with no wedding memberships.
 - **Limits:** Hosted flows, Google/password linking, timed expiry, independent OTP attempt exhaustion, session renewal, populated account isolation, manual reset confirmation, and exact 320/390-pixel coverage remain unverified in this pass. See [the detailed QA report](QA_REPORT_2026-11-21.md) for case-level outcomes, screenshot evidence, release findings, and remaining coverage.
+
+## Agreed feature workflow
+
+Confirmed by the user on 24 November 2026: identify the next feature, discuss and agree its scope and flows, create its UI design in Google Stitch, review and approve that design, then implement it in the website. Do not begin feature implementation before the planning and Stitch design steps are approved. The next feature to discuss is **Create a Wedding** from My Weddings; it has not been delivered in the active codebase.
 
 ## Remaining work
 
