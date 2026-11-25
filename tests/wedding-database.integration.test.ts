@@ -30,7 +30,7 @@ afterAll(async () => {
   const weddings = await db.collection("weddings").find({ createdByAuthUserId: owner, slug }).toArray();
   const members = await db.collection("weddingMembers").find({ authUserId: owner }).toArray();
   const ids = [...weddings.map((w) => w._id), ...members.map((m) => m.weddingId as ObjectId)];
-  for (const name of ["memberInvites", "weddingMembers", "weddingSites", "weddingBudgets", "weddingPlans", "storageUsage", "auditEvents"]) {
+  for (const name of ["events", "memberInvites", "weddingMembers", "weddingSites", "weddingBudgets", "weddingPlans", "storageUsage", "auditEvents"]) {
     await db.collection(name).deleteMany({ weddingId: { $in: ids } });
   }
   await db.collection("weddings").deleteMany({ _id: { $in: ids }, createdByAuthUserId: owner, slug });
@@ -71,7 +71,7 @@ it.skipIf(!enabled)("commits the full bundle, enforces concurrent slug uniquenes
   expect(await db.collection("auditEvents").countDocuments({ weddingId })).toBe(3);
   const { sendPartnerInvite, recipientInvite, partnerPanel, cancelPartnerInvite } = await import("@/modules/weddings/partner-invites");
   const creator = { id: owner, email: "creator@example.test", name: "Creator", emailVerified: true };
-  const partner = { ...creator, id: outsider, email: "partner@example.test" };
+  const partner = { ...creator, id: outsider, email: "partner-" + run + "@example.test" };
   await expect(sendPartnerInvite(created!.id, partner, creator.email)).rejects.toMatchObject({ status: 404 });
   await expect(sendPartnerInvite(created!.id, creator, creator.email)).rejects.toMatchObject({ status: 422 });
   const first = await sendPartnerInvite(created!.id, creator, partner.email);
@@ -88,6 +88,8 @@ it.skipIf(!enabled)("commits the full bundle, enforces concurrent slug uniquenes
   expect(failed.failed).toBe(true);
   await db.collection("weddings").updateOne({ _id: weddingId }, { $unset: { lastPartnerInviteAt: "" } });
   const expired = await sendPartnerInvite(created!.id, creator, partner.email, failed.id);
+  expect(await db.collection("auditEvents").distinct("entityId", { weddingId, action: "memberInvite.revoked", actorAuthUserId: owner }))
+    .toEqual(expect.arrayContaining([first.inviteId, failed.id]));
   await db.collection("memberInvites").updateOne({ _id: new ObjectId(expired.inviteId) }, { $set: { expiresAt: new Date(0) } });
   await expect(recipientInvite(mail.mock.calls[2][2].split("#").pop(), partner, true)).rejects.toMatchObject({ status: 404 });
   await db.collection("weddings").updateOne({ _id: weddingId }, { $unset: { lastPartnerInviteAt: "" } });
@@ -97,6 +99,17 @@ it.skipIf(!enabled)("commits the full bundle, enforces concurrent slug uniquenes
   const attempts = await Promise.allSettled([recipientInvite(token, partner, true), recipientInvite(token, partner, true)]);
   expect(attempts.filter(attempt => attempt.status === "fulfilled")).toHaveLength(1);
   expect(await partnerPanel(created!.id, owner)).toMatchObject({ joined: true });
+  const { saveEvent, readEvents } = await import("@/modules/planning/events");
+  const ceremony = { name: "Family puja", startAt: "2027-02-14T06:30:00Z", endAt: "2027-02-14T08:00:00Z", instructions: "Meet in the hall" };
+  const saved = await saveEvent(created!.id, owner, ceremony);
+  const earlier = await saveEvent(created!.id, outsider, { ...ceremony, startAt: "2027-02-13T06:30:00Z" });
+  expect((await readEvents(created!.id, owner)).map(e => e.id)).toEqual([earlier.id, saved.id]);
+  await expect(saveEvent(created!.id, outsider, { name: "Morning puja", expectedVersion: 1 }, saved.id))
+    .resolves.toMatchObject({ version: 2, instructions: ceremony.instructions, visibility: "invitedOnly" });
+  await expect(saveEvent(created!.id, owner, { status: "cancelled", expectedVersion: 1 }, saved.id)).rejects.toMatchObject({ status: 409 });
+  await saveEvent(created!.id, owner, { status: "cancelled" }, saved.id);
+  expect((await readEvents(created!.id, outsider, { scheduled: true })).map(e => e.id)).toEqual([earlier.id]);
+  await expect(readEvents(created!.id, "unrelated")).rejects.toMatchObject({ status: 404 });
   expect(await getMyWedding(created!.id, outsider)).toMatchObject({ myRole: "admin", ownerSeat: "groom" });
   await expect(changeWeddingLifecycle(created!.id, owner, slug)).rejects.toMatchObject({ status: 409 });
 }, 30000);

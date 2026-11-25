@@ -6,7 +6,8 @@ import { PasswordField } from "@/components/account/password-field";
 import { authClient } from "@/lib/auth/client";
 import { emailSchema, resetOtpLength, resetOtpMinutes } from "@/lib/auth/credentials";
 
-export function PasswordResetForm({ available }: { available: boolean }) {
+export function PasswordResetForm({ available, partner = false }: { available: boolean; partner?: boolean }) {
+  const login = partner ? "/login?partner=1" : "/login";
   const [email, setEmail] = useState("");
   const [verifiedCode, setVerifiedCode] = useState("");
   const [pending, setPending] = useState(false);
@@ -102,7 +103,7 @@ export function PasswordResetForm({ available }: { available: boolean }) {
   }
 
   if (completed) {
-    return <p className="account-notice" role="status">Your password has been reset. <Link href="/login">Log in</Link> with your new password.</p>;
+    return <p className="account-notice" role="status">Your password has been reset. <Link href={login}>Log in</Link> with your new password.</p>;
   }
 
   return (
@@ -131,7 +132,7 @@ export function PasswordResetForm({ available }: { available: boolean }) {
         {email && <button className="account-button subtle" type="button" onClick={() => requestCode(email)}>Send a new code</button>}
         {email && <button className="account-button subtle" type="button" onClick={() => { setEmail(""); setVerifiedCode(""); setError(""); }}>Use a different email</button>}
       </fieldset>
-      <p className="account-entry-link"><Link href="/login">Back to login</Link></p>
+      <p className="account-entry-link"><Link href={login}>Back to login</Link></p>
     </form>
   );
 }

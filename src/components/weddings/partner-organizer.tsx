@@ -19,9 +19,10 @@ export function PartnerOrganizer({ weddingId, ownEmail, bride, groom, panel }: P
     setBusy(true);
     setError("");
     try {
-      const response = await fetch("/api/v1/weddings/" + weddingId + "/member-invites", {
-        method: cancel ? "DELETE" : "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cancel ? { inviteId: invite?.id } : { role: "admin", email: address, replaceId: invite?.id }),
+      const endpoint = "/api/v1/weddings/" + weddingId + "/member-invites";
+      const response = await fetch(cancel ? endpoint + "/" + invite?.id + "/revoke" : endpoint, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: cancel ? undefined : JSON.stringify({ role: "admin", email: address, replaceId: invite?.id }),
       });
       const result = await response.json();
       if (!response.ok) setError(result.error?.message || "Please try again.");

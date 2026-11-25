@@ -1,0 +1,23 @@
+.itinerary-main { max-width: 1200px; }
+.itinerary-heading,.ceremony-actions,.ceremony-cards footer,.ceremony-meta { display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+.itinerary-heading { margin:2rem 0; }
+.itinerary-heading h1 { margin:.4rem 0; }
+.itinerary-heading .account-button,.ceremony-actions .account-button { width:auto; flex-shrink:0; }
+.itinerary-layout { display:grid; grid-template-columns:minmax(220px, 1fr) minmax(0, 2fr); gap:24px; align-items:start; }
+.itinerary-timeline,.ceremony-cards article,.ceremony-form { border:1px solid #ceddd3; border-radius:16px; background:white; padding:clamp(20px,3vw,36px); overflow-wrap:anywhere; }
+.itinerary-timeline { background:#ebf6ef; }
+.itinerary-main h2,.ceremony-form legend { font:400 1.8rem/1.2 "Newsreader Variable",Georgia,serif; }
+.itinerary-timeline h3,.ceremony-meta { font-size:.8rem; color:#52665b; margin:1rem 0 .5rem; }
+.itinerary-timeline ol { border-left:2px solid #a2bdad; margin:0; padding:0 0 0 1rem; list-style:none; }
+.itinerary-timeline li { padding:.5rem 0; }
+.itinerary-timeline time { font-size:.8rem; display:block; }
+.ceremony-cards { display:grid; gap:18px; }
+.ceremony-cards footer,.ceremony-actions { border-top:1px solid #dce8e0; margin-top:1rem; padding-top:1rem; }
+.ceremony-cards article p { white-space:pre-wrap; margin:.4rem 0; }
+.ceremony-meta { margin:0 0 1rem; text-transform:capitalize; }
+.ceremony-form { max-width:800px; }
+.ceremony-form legend { margin-bottom:1.25rem; }
+.ceremony-form :is(select,textarea) { width:100%; border:1px solid #b9c9bf; border-radius:8px; background:white; color:inherit; padding:.7rem; font:inherit; }
+.ceremony-pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.ceremony-form input { min-width:0; }
+@media(max-width:720px){.itinerary-layout,.ceremony-pair { grid-template-columns:minmax(0,1fr); }.itinerary-heading { align-items:flex-start; flex-direction:column; }}

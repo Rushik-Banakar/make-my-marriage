@@ -36,6 +36,10 @@ export default async function WeddingPage({ params }: { params: Promise<{ weddin
         </dl>
         {wedding.myRole === "admin" && <Link className="account-button create-wedding-link" href={`/weddings/${wedding.id}/partner`}>Invite your partner</Link>}
       </section>
+      {wedding.myRole === "admin" && <section className="wedding-setup-card">
+        <h2>Wedding planning</h2>
+        <Link className="account-text-link" href={`/weddings/${wedding.id}/events`}>Events &amp; Wedding Itinerary →</Link>
+      </section>}
       {wedding.myRole === "admin" && <WeddingLifecycleControl id={wedding.id} slug={wedding.slug} />}
     </main>
   </div>;

@@ -14,7 +14,7 @@ export function inviteRequest(request: Request, route: string, work: (user: User
       if (!user) return apiError(401, "AUTH_REQUIRED", "Sign in with the invited email address.");
       const config = readAuthEnvironment();
       if (!config) throw new Error("Missing configuration");
-      if (request.headers.get("origin") !== new URL(config.BETTER_AUTH_URL).origin)
+      if (request.method !== "GET" && request.headers.get("origin") !== new URL(config.BETTER_AUTH_URL).origin)
         return apiError(403, "INVALID_ORIGIN", "Open the invitation from this website.");
       return apiSuccess(await work(user), undefined, { status });
     } catch (error) {

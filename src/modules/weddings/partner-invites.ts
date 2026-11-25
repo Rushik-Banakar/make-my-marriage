@@ -32,6 +32,27 @@ async function transaction<T>(fn: (db: Db, session: ClientSession) => Promise<T>
   return db.client.withSession(session => session.withTransaction(() => fn(db, session)));
 }
 
+async function reserveSendAllowance(db: Db, session: ClientSession, actorId: string, recipient: string, now: Date) {
+  const hour = Math.floor(now.getTime() / 3600000);
+  const expiresAt = new Date((hour + 1) * 3600000);
+  const counters = db.collection<{ _id: string; count: number; expiresAt: Date }>("partnerInviteSendLimits");
+  for (const [scope, identity, limit] of [["account", actorId, 10], ["recipient", recipient, 5]] as const) {
+    const key = digest("partner-invite:" + scope + ":" + hour + ":" + identity);
+    const counter = await counters.findOneAndUpdate({ _id: key }, {
+      $inc: { count: 1 }, $setOnInsert: { expiresAt },
+    }, { upsert: true, returnDocument: "after", session });
+    if (!counter || counter.count > limit) throw new InviteError(429, "Invitation send limit reached. Try again later.");
+  }
+}
+
+async function auditRevocation(db: Db, session: ClientSession, weddingId: ObjectId, inviteId: ObjectId, actorId: string, now: Date) {
+  await db.collection("auditEvents").insertOne({
+    weddingId, actorAuthUserId: actorId, action: "memberInvite.revoked",
+    entityType: "memberInvites", entityId: inviteId.toHexString(),
+    occurredAt: now, createdAt: now, outcome: "success",
+  }, { session });
+}
+
 export async function partnerPanel(wedding: string, actor: string) {
   const weddingId = id(wedding);
   return transaction(async (db, session) => {
@@ -72,7 +93,11 @@ export async function sendPartnerInvite(wedding: string, actor: Actor, address: 
       throw new InviteError(409, "The invitation has changed. Refresh this page.");
     if (record.lastPartnerInviteAt && now.getTime() - new Date(record.lastPartnerInviteAt).getTime() < 60000)
       throw new InviteError(429, "Please wait one minute before sending another invitation.");
-    if (pending) await invites.updateOne({ _id: pending._id }, { $set: { status: "revoked" } }, { session });
+    await reserveSendAllowance(db, session, actor.id, email, now);
+    if (pending) {
+      await invites.updateOne({ _id: pending._id }, { $set: { status: "revoked" } }, { session });
+      await auditRevocation(db, session, weddingId, pending._id, actor.id, now);
+    }
     await invites.insertOne({ _id: inviteId, weddingId, role: "admin", ownerSeat: admin.ownerSeat === "bride" ? "groom" : "bride",
       invitedEmailNormalized: email, tokenHash, invitedByAuthUserId: actor.id, inviterName: actor.name,
       status: "pending", createdAt: now, expiresAt }, { session });
@@ -94,12 +119,14 @@ export async function sendPartnerInvite(wedding: string, actor: Actor, address: 
 
 export async function cancelPartnerInvite(wedding: string, actor: string, invitation: string) {
   const weddingId = id(wedding);
+  const inviteId = id(invitation);
   await transaction(async (db, session) => {
     if (!await findWeddingAdmin(db, weddingId, actor, session) ||
         !await db.collection("weddings").findOne({ _id: weddingId, ...active }, { session })) throw missing();
-    const result = await db.collection("memberInvites").updateOne({ _id: id(invitation), weddingId, role: "admin", status: "pending" },
+    const result = await db.collection("memberInvites").updateOne({ _id: inviteId, weddingId, role: "admin", status: "pending" },
       { $set: { status: "revoked" } }, { session });
     if (!result.modifiedCount) throw unavailable();
+    await auditRevocation(db, session, weddingId, inviteId, actor, new Date());
   });
   return { status: "revoked" };
 }

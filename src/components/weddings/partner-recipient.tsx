@@ -7,6 +7,29 @@ import { SignOutButton } from "@/components/account/auth-controls";
 import type { recipientInvite } from "@/modules/weddings/partner-invites";
 
 const storageKey = "mmm.partnerInvitation";
+const continuationKey = "mmm.partnerInvitation.continuation";
+const tokenPattern = /^[a-f0-9]{64}$/;
+
+function saveContinuation(token: string) {
+  try {
+    localStorage.setItem(continuationKey, JSON.stringify({ token, expiresAt: Date.now() + 3600000 }));
+  } catch {
+    // Session storage still supports continuation in the original tab.
+  }
+}
+
+function readContinuation() {
+  try {
+    const entry = JSON.parse(localStorage.getItem(continuationKey) ?? "null");
+    if (entry && typeof entry.token === "string" && tokenPattern.test(entry.token) && entry.expiresAt > Date.now()) {
+      return entry.token as string;
+    }
+    localStorage.removeItem(continuationKey);
+  } catch {
+    // Reopening the original link also restores the invitation.
+  }
+  return "";
+}
 async function request(token: string, action: "review" | "accept") {
   const response = await fetch("/api/v1/member-invites/recipient", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, action }),
@@ -24,10 +47,13 @@ export function PartnerRecipient({ signedIn }: { signedIn: boolean }) {
     let current = true;
     async function review() {
       const fragment = window.location.hash.slice(1);
-      const token = fragment || sessionStorage.getItem(storageKey) || "";
-      if (!/^[a-f0-9]{64}$/.test(token)) throw new Error("Open the invitation link from your email.");
+      const token = fragment || sessionStorage.getItem(storageKey) || readContinuation();
+      if (!tokenPattern.test(token)) throw new Error("Open the invitation link from your email.");
       sessionStorage.setItem(storageKey, token);
-      if (fragment) window.history.replaceState(null, "", window.location.pathname);
+      if (fragment) {
+        saveContinuation(token);
+        window.history.replaceState(null, "", window.location.pathname);
+      }
       if (signedIn) {
         const result = await request(token, "review");
         if (current) setDetails(result);
@@ -39,8 +65,14 @@ export function PartnerRecipient({ signedIn }: { signedIn: boolean }) {
   async function accept() {
     setPending(true); setError("");
     try {
-      const result = await request(sessionStorage.getItem(storageKey) || "", "accept");
+      const token = sessionStorage.getItem(storageKey) || "";
+      const result = await request(token, "accept");
       sessionStorage.removeItem(storageKey);
+      try {
+        if (readContinuation() === token) localStorage.removeItem(continuationKey);
+      } catch {
+        // An accepted token cannot be used again.
+      }
       router.replace("/weddings/" + result.weddingId);
     } catch (e) { setError(e instanceof Error ? e.message : "Please try again."); setPending(false); }
   }

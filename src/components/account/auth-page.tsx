@@ -120,10 +120,10 @@ export async function AuthPage({
             <p className="account-notice" role="status">You can now log in with your email and password.</p>}
           {error && <p className="account-error" role="alert">{error}</p>}
           {resetPassword
-            ? <PasswordResetForm available={canSendEmail} />
+            ? <PasswordResetForm available={canSendEmail} partner={partner} />
             : <CredentialsForm partner={partner} signingUp={signingUp} available={signingUp ? canSendEmail : available} />}
           {!signingUp && !resetPassword && <>
-            <p className="account-entry-link"><Link href="/login?reset=1">Forgot password?</Link></p>
+            <p className="account-entry-link"><Link href={partner ? "/login?reset=1&partner=1" : "/login?reset=1"}>Forgot password?</Link></p>
             <GoogleSignIn partner={partner} available={available} />
           </>}
           <Link className="account-text-link" href="/#demo">

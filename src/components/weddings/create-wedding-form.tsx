@@ -88,7 +88,7 @@ export function CreateWeddingForm() {
               <label>Your role<select name="initialOwnerSeat" required value={seat} onChange={(e) => setSeat(e.target.value)}>
                 <option value="" disabled>Select your role</option><option value="bride">I’m the bride</option><option value="groom">I’m the groom</option>
               </select></label>
-              <p className="setup-info"><Icon name="people" />You’ll be the first co-owner. Partner invitations are coming in a future update.</p>
+              <p className="setup-info"><Icon name="people" />You’ll be the first co-owner. After creating your wedding, you can invite your partner from its workspace.</p>
             </div>}
             {step === 1 && <div className="setup-fields">
               <label>Wedding date<input type="date" name="date" min="1900-01-01" max="9999-12-31" required value={date} onChange={(e) => setDate(e.target.value)} /></label>

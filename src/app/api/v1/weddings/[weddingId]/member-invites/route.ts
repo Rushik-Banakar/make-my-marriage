@@ -1,7 +1,14 @@
 import { z } from "zod";
 import { inviteBody, inviteRequest } from "@/modules/weddings/invite-http";
-import { cancelPartnerInvite, sendPartnerInvite } from "@/modules/weddings/partner-invites";
+import { cancelPartnerInvite, partnerPanel, sendPartnerInvite } from "@/modules/weddings/partner-invites";
 type Context = { params: Promise<{ weddingId: string }> };
+
+export function GET(request: Request, { params }: Context) {
+  return inviteRequest(request, "memberInvites.list", async user => {
+    const { invitation } = await partnerPanel((await params).weddingId, user.id);
+    return { items: invitation ? [invitation] : [] };
+  });
+}
 
 export function POST(request: Request, { params }: Context) {
   return inviteRequest(request, "memberInvites.send", async user => {
