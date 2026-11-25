@@ -34,7 +34,7 @@ export default async function WeddingPage({ params }: { params: Promise<{ weddin
           <div><dt>Wedding website address</dt><dd>{wedding.slug}</dd></div>
           <div><dt>Website visibility</dt><dd>Private draft</dd></div>
         </dl>
-        <p className="account-secondary">Your workspace is saved. Partner invitations, events and planning tools are coming in the next milestones.</p>
+        {wedding.myRole === "admin" && <Link className="account-button create-wedding-link" href={`/weddings/${wedding.id}/partner`}>Invite your partner</Link>}
       </section>
       {wedding.myRole === "admin" && <WeddingLifecycleControl id={wedding.id} slug={wedding.slug} />}
     </main>

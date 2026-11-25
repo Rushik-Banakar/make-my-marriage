@@ -58,8 +58,7 @@ export default async function MyWeddingsPage() {
               join through an accepted invitation will appear here.
             </p>
             <p className="account-secondary">
-              Create your wedding to get started. Partner invitations are coming
-              in the next milestone.
+              Create your wedding or open a partner invitation from your email to get started.
             </p>
             <Link className="account-button" href="/#demo">
               Explore the sample wedding

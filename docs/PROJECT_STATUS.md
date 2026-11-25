@@ -6,9 +6,9 @@ This file tracks delivered features and the project's current state. Read it bef
 
 ## Current state
 
-The application scaffold and responsive public homepage are complete within their stated scope. The homepage shows illustrative, read-only wedding data and offers separate Sign up and Log in actions. Local authentication supports verified email/password registration, password or Google login, and email-code password recovery. Signed-in users can create a private draft wedding, view active memberships and open a protected summary. Single-owner weddings support confirmed, recoverable deletion and restoration. API request metadata and wedding lifecycle audit events are persisted in MongoDB. The remaining onboarding and wedding workflows are not yet implemented.
+The application scaffold and responsive public homepage are complete within their stated scope. The homepage shows illustrative, read-only wedding data and offers separate Sign up and Log in actions. Local authentication supports verified email/password registration, password or Google login, and email-code password recovery. Signed-in users can create a private draft wedding, view active memberships and open a protected summary. Single-owner weddings support confirmed, recoverable deletion and restoration. API request metadata and wedding lifecycle audit events are persisted in MongoDB. Partner invitations now support verified-email acceptance into the second Admin seat. Independent-inbox delivery and signed-in browser acceptance still need verification.
 
-The latest committed feature is `3818862` (authentication database connection recovery) on `dev`, following `50de657` (registration and existing-account feedback). Both are pushed to `origin/dev`; `6be1986` records the agreed feature workflow. The Stitch-based wedding creation increment below is in the working tree. Resend confirmed delivery of a local reset code to the configured test inbox. Hosted registration and recovery, Google/password account linking, and live session expiry checks remain unverified. Authentication remains in progress.
+Wedding creation, deletion and restoration shipped in `17c65ad`. Partner invitations now use the configured Gmail sender locally. General-customer readiness and external-device acceptance still require verification on a reachable deployment.
 
 ## Scope references
 
@@ -180,13 +180,32 @@ Stitch provides the visual reference. Where its mockups suggest features beyond 
 - **Open:** General-recipient signup verification still requires an authorized sender and external-inbox verification. Hosted deployment and other authentication follow-ups remain open.
 - **Build checks:** Lint, type checking, and the Webpack production build passed. The default Turbopack build reproduced the existing CSS-worker failure.
 
+### Fresh manual readiness check — 25 November 2026
+
+- **Status:** In progress for general-customer readiness; wedding feature checks passed, but the whole website is not marked complete. This QA pass did not initiate a commit or push. Feature commit `17c65ad` appeared concurrently and was verified on remote `origin/dev`; the latest QA findings remain uncommitted.
+- **Verified:** A fresh browser pass covered registration/login validation, uppercase email login, optional wedding fields, Unicode and literal HTML-like names, date/timezone/slug errors, duplicate-address recovery, review edits, refresh persistence, delete/cancel/restore, signed-out protection, 320/390/1280px workspace widths and an existing Google account's full login callback. 25 explicit browser assertions and 45 live API edge-case checks passed. The current automated suite passed 57 tests; the live database integration test and production build were not rerun in this pass.
+- **Blocking normal customer flow:** The configured Resend test sender could not deliver verification to the new synthetic address or a reset code to the verified synthetic account. The UI still showed check-email/code-entry feedback, and the new customer could not complete verification. General-recipient sender configuration and real independent-inbox delivery must be verified before onboarding/recovery can be marked complete.
+- **Scope and cleanup:** No application code was changed by the tester. The user chose to retain the restored browser test wedding and the new unverified test account after automatic review blocked permanent cleanup. Existing user weddings were untouched; test sessions were signed out and normal saved email settings remained in use. Shared working-tree logging/setup edits were preserved. See [the fresh manual pass and case table](QA_REPORT_2026-11-25.md#fresh-manual-readiness-pass--25-november-2026).
+
+### Partner invitations — 25 November 2026
+
+**In progress.** Implemented the desktop and mobile Invite Your Partner designs and recipient acceptance in the private wedding flow. From the wedding summary, an Admin can send, resend, correct or cancel an invitation and see whether the other seat is filled. Links expire after seven days. The web flow keeps the token in the email link fragment and uses request bodies for review and acceptance. MongoDB stores its keyed hash. A transaction consumes the invitation and assigns the vacant bride or groom Admin seat to the matching verified account. The existing multi-owner deletion guard remains enforced.
+
+**Verification.** Lint, type checking, 57 standard tests and the production build passed. Invitation indexes were provisioned. A separate Atlas integration test with simulated email verified wrong-account and unverified-account denial, cancellation, expiry, send cooldown, failed delivery and retry, concurrent acceptance, the resulting membership and the shared deletion guard. Local HTTP checks returned 200 for the recipient page and 401 for an anonymous recipient API request.
+
+**Remaining.** Verify both screen sizes in a signed-in browser, recipient inbox placement and acceptance from another device using a publicly reachable deployment URL.
+
 ## Agreed feature workflow
+
+**Gmail delivery update, 25 November 2026.** Partner invitations, signup verification and password resets support delivery through a designated Gmail account using SMTP. Gmail takes precedence when its credentials are configured. Setup is documented in [the authentication guide](AUTH_SETUP.md). Mock SMTP tests cover an independent Gmail recipient and incomplete credentials. Gmail SMTP authentication passed. A real co-owner invitation returned HTTP 201 and appeared in Gmail Sent. Recipient inbox placement remains unverified. Links generated on localhost work on the machine running the app.
+
+On 25 November 2026, work began on the recipient side of partner invitations. The Stitch project contains a desktop co-owner acceptance design. The onboarding design references inviting a co-owner, while the team invitation form is for managers. A development-only preview at `/partner-invitation/preview` renders the recipient card with sample data and a disabled acceptance action. Local HTTP verification returned 200 with the sample recipient. The organizer form design, email delivery, token handling and membership enrollment remain pending.
 
 Confirmed by the user on 24 November 2026: identify the next feature, discuss and agree its scope and flows, create its UI design in Google Stitch, review and approve that design, then implement it in the website. Do not begin feature implementation before the planning and Stitch design steps are approved. The user subsequently authorized Create a Wedding implementation using the existing Stitch design. Apply the same workflow to the next increment, co-owner onboarding.
 
 ## Remaining work
 
-Close the session-renewal issue and complete the account access checks. Initial wedding creation is locally verified. The next product increment is second co-owner onboarding, followed by events and the private dashboard. The design documents govern implementation scope and sequencing.
+Close the session-renewal issue and complete the account access checks. Initial wedding creation is locally verified. Second co-owner onboarding is implemented and awaiting independent-inbox and signed-in browser verification. Events and the private dashboard follow. The design documents govern implementation scope and sequencing.
 
 - Session-cookie refresh fix and renewal test, session-expiry and administrative revocation checks, multi-account isolation, and remaining account/profile and development-only OTP login requirements.
 - Broader wedding setup (cover media), co-owner onboarding, and additional server-enforced permissions. Initial creation, location/title/description capture, membership listing and private summary access are implemented locally.

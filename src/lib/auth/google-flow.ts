@@ -2,12 +2,12 @@
 
 import { authClient } from "@/lib/auth/client";
 
-export async function startGoogleAuthentication() {
+export async function startGoogleAuthentication(partner = false) {
   const result = await authClient.signIn.social({
     provider: "google",
     requestSignUp: false,
-    callbackURL: "/weddings",
-    errorCallbackURL: "/login",
+    callbackURL: partner ? "/partner-invitation" : "/weddings",
+    errorCallbackURL: partner ? "/login?partner=1" : "/login",
     disableRedirect: true,
   });
   if (result.error || !result.data?.url) {

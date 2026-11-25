@@ -6,9 +6,9 @@ import { authClient } from "@/lib/auth/client";
 import { startGoogleAuthentication } from "@/lib/auth/google-flow";
 
 export function GoogleSignIn({
-  available,
+  available, partner = false,
 }: {
-  available: boolean;
+  available: boolean; partner?: boolean;
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -17,7 +17,7 @@ export function GoogleSignIn({
     setPending(true);
     setError("");
     try {
-      await startGoogleAuthentication();
+      await startGoogleAuthentication(partner);
     } catch {
       setError("We couldn’t start Google authentication. Please try again shortly.");
       setPending(false);
@@ -68,7 +68,7 @@ export function GoogleSignIn({
   );
 }
 
-export function SignOutButton() {
+export function SignOutButton({ partner = false }: { partner?: boolean } = {}) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -78,7 +78,7 @@ export function SignOutButton() {
     try {
       const result = await authClient.signOut();
       if (result.error) throw new Error("Sign-out failed");
-      router.replace("/login");
+      router.replace(partner ? "/login?partner=1" : "/login");
       router.refresh();
     } catch {
       setError("Couldn’t sign out. Please try again.");

@@ -45,7 +45,9 @@ Paste the output into `.env.local` without sharing it. The secret must be at lea
 
 ## 3. Configure verification email
 
-For delivery to real inboxes, set `AUTH_USE_MAILPIT=false` and configure `AUTH_RESEND_API_KEY` and `AUTH_VERIFICATION_FROM` in the ignored `.env.local`. Use a sending-only key and an authorized sender address. The local setup uses `onboarding@resend.dev`, which can send to the inbox associated with the Resend account. Resend confirmed delivery of a reset code to that inbox. Delivery to other recipients requires a verified sender domain.
+For Gmail delivery, set `AUTH_GMAIL_USER` to the sender address and `AUTH_GMAIL_APP_PASSWORD` to its Google app password in the ignored `.env.local`. Create the app password on the sending Google account with 2-Step Verification enabled. Restart the server after saving. Gmail handles partner invitations, account verification and password resets when configured. SMTP acceptance does not guarantee inbox placement. A partner on a different device needs an invitation generated with the reachable deployment URL in `BETTER_AUTH_URL`.
+
+For Resend delivery, leave both Gmail settings empty, set `AUTH_USE_MAILPIT=false` and configure `AUTH_RESEND_API_KEY` and `AUTH_VERIFICATION_FROM`. The Resend test sender `onboarding@resend.dev` can send to the inbox associated with the Resend account. Delivery through Resend to other recipients requires a verified sender domain.
 
 For synthetic local email testing, run Mailpit with its web API bound to `127.0.0.1:8025` and SMTP bound to `127.0.0.1:1025`. Set `AUTH_USE_MAILPIT=true` and leave the Resend settings unset. Restart Next.js and open the inbox separately at `http://127.0.0.1:8025`. With both modes configured, Resend takes precedence. Mailpit is available only in development.
 

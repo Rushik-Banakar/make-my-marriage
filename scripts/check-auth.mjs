@@ -18,7 +18,12 @@ if (environment.BETTER_AUTH_SECRET.length < 32) {
   console.error("BETTER_AUTH_SECRET must have at least 32 characters.");
   process.exit(1);
 }
-if (environment.AUTH_VERIFICATION_FROM?.endsWith("@resend.dev")) {
+if (environment.AUTH_GMAIL_USER?.trim() || environment.AUTH_GMAIL_APP_PASSWORD?.trim()) {
+  if (!environment.AUTH_GMAIL_USER?.trim() || environment.AUTH_GMAIL_APP_PASSWORD?.replace(/\s/g, "").length !== 16) {
+    console.error("Set both the Gmail sender address and its 16-character Google app password.");
+    process.exit(1);
+  }
+} else if (environment.AUTH_VERIFICATION_FROM?.endsWith("@resend.dev")) {
   console.warn("Email uses Resend's restricted test sender; arbitrary recipients cannot receive verification or reset emails.");
 }
 console.log("Required authentication settings are present. Checking database connectivity…");

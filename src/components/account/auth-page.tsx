@@ -15,7 +15,7 @@ export async function AuthPage({
   searchParams,
   mode,
 }: {
-  searchParams: Promise<{ error?: string | string[]; verified?: string; reset?: string }>;
+  searchParams: Promise<{ error?: string | string[]; verified?: string; reset?: string; partner?: string }>;
   mode: "signup" | "login";
 }) {
   let available = Boolean(readAuthEnvironment());
@@ -25,8 +25,9 @@ export async function AuthPage({
   } catch {
     available = false;
   }
-  if (session) redirect("/weddings");
   const params = await searchParams;
+  const partner = params.partner === "1";
+  if (session) redirect(partner ? "/partner-invitation" : "/weddings");
   const signingUp = mode === "signup";
   const resetPassword = !signingUp && params.reset === "1";
   const canSendEmail = available && Boolean(getVerificationDelivery());
@@ -120,10 +121,10 @@ export async function AuthPage({
           {error && <p className="account-error" role="alert">{error}</p>}
           {resetPassword
             ? <PasswordResetForm available={canSendEmail} />
-            : <CredentialsForm signingUp={signingUp} available={signingUp ? canSendEmail : available} />}
+            : <CredentialsForm partner={partner} signingUp={signingUp} available={signingUp ? canSendEmail : available} />}
           {!signingUp && !resetPassword && <>
             <p className="account-entry-link"><Link href="/login?reset=1">Forgot password?</Link></p>
-            <GoogleSignIn available={available} />
+            <GoogleSignIn partner={partner} available={available} />
           </>}
           <Link className="account-text-link" href="/#demo">
             Explore the sample workspace

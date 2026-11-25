@@ -1,0 +1,13 @@
+.partner-main { max-width: 1120px; }
+.partner-main h1 { margin-top: 1.2rem; }
+.partner-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(250px, 2fr); gap: 24px; align-items: start; margin-top: 28px; }
+.partner-layout .wedding-setup-card { margin: 0; overflow-wrap: anywhere; }
+.partner-layout .account-button { width: auto; }
+.partner-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.partner-preview { background: #ebf6ef; color: #244a40; border: 1px solid #d6e3da; border-radius: 16px; padding: 28px; }
+.partner-preview h2 { font: 400 32px/1.2 "Newsreader Variable", Georgia, serif; margin: 18px 0; overflow-wrap: anywhere; }
+.partner-preview p + p { margin-top: 1rem; }
+@media (max-width: 720px) {
+  .partner-layout { grid-template-columns: minmax(0, 1fr); }
+  .partner-actions, .partner-actions .account-button { width: 100%; }
+}

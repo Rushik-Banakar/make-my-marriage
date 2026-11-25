@@ -21,6 +21,9 @@ const client = new MongoClient(DATABASE_URL, {
 try {
   const db = client.db(DATABASE_NAME);
   await db.collection("weddings").createIndex({ slug: 1 }, { unique: true });
+  const invites = db.collection("memberInvites");
+  await invites.createIndex({ tokenHash: 1 }, { unique: true });
+  await invites.createIndex({ weddingId: 1, status: 1 });
   const members = db.collection("weddingMembers");
   await members.createIndex({ weddingId: 1, authUserId: 1 }, { unique: true });
   await members.createIndex({ authUserId: 1, status: 1 });

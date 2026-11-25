@@ -10,10 +10,13 @@ import {
   phoneSchema,
 } from "@/lib/auth/credentials";
 
-export function CredentialsForm({ signingUp, available }: {
+export function CredentialsForm({ signingUp, available, partner = false }: {
+  partner?: boolean;
   signingUp: boolean;
   available: boolean;
 }) {
+  const destination = partner ? "/partner-invitation" : "/weddings";
+  const login = partner ? "/login?partner=1" : "/login";
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [submission, setSubmission] = useState<{ email: string; accountExists: boolean } | null>(null);
@@ -30,7 +33,7 @@ export function CredentialsForm({ signingUp, available }: {
     }
     const email = parsedEmail.data;
     const password = String(data.get("password"));
-    const callbackURL = "/login?verified=1";
+    const callbackURL = partner ? "/login?verified=1&partner=1" : "/login?verified=1";
     setError("");
     setPending(true);
     try {
@@ -64,7 +67,7 @@ export function CredentialsForm({ signingUp, available }: {
         setSubmission({ email, accountExists: false });
         return;
       }
-      const result = await authClient.signIn.email({ email, password, callbackURL: "/weddings" });
+      const result = await authClient.signIn.email({ email, password, callbackURL: destination });
       if (result.error) {
         if (result.error.code === "EMAIL_NOT_VERIFIED") {
           setError("Verify your email before logging in. Check your inbox and spam folder for the verification link.");
@@ -77,7 +80,7 @@ export function CredentialsForm({ signingUp, available }: {
         }
         return;
       }
-      router.replace("/weddings");
+      router.replace(destination);
       router.refresh();
     } catch {
       setError("The request couldn’t finish. Please try again shortly.");
@@ -89,7 +92,7 @@ export function CredentialsForm({ signingUp, available }: {
   if (submission) {
     return <div className="account-notice" role="status">
       {submission.accountExists
-        ? <p>An account already exists with this email. <Link href="/login">Please log in</Link>.</p>
+        ? <p>An account already exists with this email. <Link href={login}>Please log in</Link>.</p>
         : <p>Check <strong>{submission.email}</strong> for the verification link before logging in.</p>}
       <button className="account-button subtle" type="button" onClick={() => setSubmission(null)}>
         Use a different email
@@ -129,7 +132,7 @@ export function CredentialsForm({ signingUp, available }: {
           {pending ? "Please wait…" : signingUp ? "Sign up" : "Log in"}
         </button>
       </fieldset>
-      {signingUp && <p className="account-entry-link">Already a member? <Link href="/login">Log in</Link></p>}
+      {signingUp && <p className="account-entry-link">Already a member? <Link href={login}>Log in</Link></p>}
     </form>
   );
 }
