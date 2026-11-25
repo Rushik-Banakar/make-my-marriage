@@ -1,7 +1,7 @@
 import "server-only";
 import { getDatabase } from "@/lib/db/mongodb";
 import { activeMembershipFilter } from "@/lib/permissions/memberships";
-import type { ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 
 export type MembershipWedding = {
   weddingId: ObjectId;
@@ -13,12 +13,13 @@ export type MembershipWedding = {
     startAt: Date;
     timezone: string;
     status: "draft" | "active" | "archived";
+    slug?: string;
   };
 };
 
-export function membershipWeddingPipeline(authUserId: string) {
+export function membershipWeddingPipeline(authUserId: string, deleted = false) {
   return [
-    { $match: activeMembershipFilter(authUserId) },
+    { $match: { ...activeMembershipFilter(authUserId), ...(deleted ? { role: "admin" } : {}) } },
     {
       $lookup: {
         from: "weddings",
@@ -26,6 +27,7 @@ export function membershipWeddingPipeline(authUserId: string) {
         foreignField: "_id",
         as: "wedding",
         pipeline: [
+          { $match: deleted ? { deletedAt: { $exists: true }, deletedByAuthUserId: authUserId } : { deletedAt: { $exists: false } } },
           {
             $project: {
               _id: 0,
@@ -34,6 +36,7 @@ export function membershipWeddingPipeline(authUserId: string) {
               startAt: 1,
               timezone: 1,
               status: 1,
+              slug: 1,
             },
           },
         ],
@@ -45,10 +48,18 @@ export function membershipWeddingPipeline(authUserId: string) {
   ];
 }
 
-export async function findMembershipWeddings(authUserId: string) {
+export async function findMembershipWeddings(authUserId: string, deleted = false) {
   const db = await getDatabase();
   return db
     .collection("weddingMembers")
-    .aggregate<MembershipWedding>(membershipWeddingPipeline(authUserId))
+    .aggregate<MembershipWedding>(membershipWeddingPipeline(authUserId, deleted))
     .toArray();
+}
+
+export async function findWeddingById(weddingId: ObjectId) {
+  const db = await getDatabase();
+  return db.collection("weddings").findOne({ _id: weddingId, deletedAt: { $exists: false } }, {
+    projection: { brideName: 1, groomName: 1, startAt: 1, timezone: 1, status: 1, slug: 1,
+      location: 1, title: 1, description: 1 },
+  });
 }

@@ -7,6 +7,7 @@ import { listMyWeddings } from "@/modules/weddings/service";
 import { AccountBrand } from "@/components/account/account-brand";
 import { SignOutButton } from "@/components/account/auth-controls";
 import { Icon } from "@/components/marketing/icon";
+import { WeddingLifecycleControl } from "@/components/weddings/wedding-lifecycle-control";
 import "@/components/account/account.css";
 
 export const metadata: Metadata = {
@@ -37,6 +38,8 @@ export default async function MyWeddingsPage() {
           Welcome, {session.user.name.split(" ")[0]}. A home for the
           celebrations you’re part of.
         </p>
+        <Link className="account-button create-wedding-link" href="/weddings/new">Create a wedding</Link>
+        <p><Link className="account-text-link" href="/weddings/deleted">Deleted weddings</Link></p>
         <div className="weddings-section-title">
           <h2>Your wedding workspaces</h2>
           <span>
@@ -55,8 +58,8 @@ export default async function MyWeddingsPage() {
               join through an accepted invitation will appear here.
             </p>
             <p className="account-secondary">
-              Wedding creation and invitation acceptance are coming in the next
-              development milestone.
+              Create your wedding to get started. Partner invitations are coming
+              in the next milestone.
             </p>
             <Link className="account-button" href="/#demo">
               Explore the sample wedding
@@ -84,10 +87,8 @@ export default async function MyWeddingsPage() {
                       timeZone: wedding.timezone,
                     }).format(new Date(wedding.startAt))}
                   </p>
-                  <small>
-                    Wedding workspace details will be available in the next
-                    milestone.
-                  </small>
+                  <Link className="account-button subtle" href={`/weddings/${wedding.id}`}>Open wedding</Link>
+                  {wedding.myRole === "admin" && wedding.slug && <WeddingLifecycleControl id={wedding.id} slug={wedding.slug} />}
                 </div>
               </article>
             ))}

@@ -1,0 +1,75 @@
+.wedding-wizard-main { max-width: 1440px; padding-top: 32px; }
+.setup-page-title { margin-bottom: 30px; }
+.setup-page-title h1 { font-size: 34px; margin: 8px 0; }
+.setup-progress { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; list-style: none; padding: 24px 28px; margin: 0 0 36px; background: #ebf6ef; border: 1px solid #d6e3da; border-radius: 16px; }
+.setup-progress button { display: flex; align-items: center; gap: 14px; text-align: left; width: 100%; border: 0; padding: 0; background: transparent; color: #414845; cursor: pointer; }
+.setup-progress button:disabled { opacity: 0.65; cursor: default; }
+.setup-step-number { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: #e0ebe3; border: 1px solid #c0c8c4; font-size: 14px; font-weight: 700; }
+.setup-progress small { display: block; font-size: 10px; color: #745a34; text-transform: uppercase; letter-spacing: 0.06em; }
+.setup-progress strong { display: block; font-size: 15px; margin-top: 4px; }
+.setup-progress :is(.active, .complete) .setup-step-number { background: #244a40; border-color: #244a40; color: white; }
+.setup-progress .active .setup-step-number { box-shadow: 0 0 0 5px #c2ebdd80; }
+.setup-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr); gap: 30px; align-items: start; }
+.setup-panel, .setup-preview-card { border: 1px solid #d6e3da; border-radius: 18px; background: #fff; padding: 36px; box-shadow: 0 3px 8px #244a4008; }
+.setup-step-tag { display: inline-block; border-radius: 5px; padding: 5px 9px; background: #fff0dc; color: #624b25; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+.setup-panel h2 { font-size: clamp(30px, 3.4vw, 46px); letter-spacing: -0.02em; margin: 20px 0 16px; }
+.setup-description { color: #5d6d65; margin-bottom: 30px !important; }
+.setup-fields { display: grid; gap: 20px; }
+.wedding-setup-form textarea { width: 100%; min-width: 0; resize: vertical; padding: 12px; border: 1px solid #b9c9bf; border-radius: 8px; background: white; color: #203b30; font: inherit; }
+.wedding-setup-form textarea:focus-visible { outline: 2px solid #417060; outline-offset: 1px; }
+.setup-description-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.setup-preview-canvas > p { overflow-wrap: anywhere; min-width: 0; }
+.setup-info { display: flex; align-items: flex-start; gap: 12px; border: 1px solid #dce8e0; border-radius: 9px; padding: 16px; background: #ebf6ef; color: #476354; font-size: 13px; font-weight: 400; }
+.setup-info .m-icon { margin-top: 2px; }
+.setup-actions { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 24px; margin-top: 12px; border-top: 1px solid #dce8e0; }
+.setup-actions .account-button { width: auto; gap: 12px; }
+.setup-actions .account-button .m-icon { width: 18px; height: 18px; }
+.setup-preview { position: sticky; top: 24px; }
+.setup-preview-card { padding: 24px; }
+.setup-preview-card > .account-eyebrow { font-size: 10px; display: flex; align-items: center; gap: 9px; }
+.setup-live-dot { width: 8px; height: 8px; background: #244a40; border-radius: 50%; }
+.setup-preview-canvas { position: relative; overflow: hidden; padding: 26px; background: #0a332a; color: white; border-radius: 12px; margin: 24px 0; }
+.setup-preview-canvas::after { content: ""; position: absolute; width: 140px; height: 140px; border: 1px solid #91b9ac20; border-radius: 50%; bottom: -65px; right: -55px; box-shadow: 0 0 0 25px #91b9ac08, 0 0 0 50px #91b9ac05; pointer-events: none; }
+.setup-preview-canvas .account-eyebrow { color: #91b9ac; font-size: 10px; }
+.setup-preview-canvas h3 { font: 400 32px/1.2 "Newsreader Variable", Georgia, serif; margin: 18px 0 12px; overflow-wrap: anywhere; }
+.setup-preview-canvas > p { color: #c2d8cd; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.setup-preview-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid #91b9ac40; padding-top: 20px; margin-top: 24px; }
+.setup-preview-facts small, .setup-preview-facts strong { display: block; }
+.setup-preview-facts small { text-transform: uppercase; color: #91b9ac; font-size: 9px; letter-spacing: 0.06em; }
+.setup-preview-facts strong { font-size: 13px; margin-top: 6px; }
+.setup-address { padding: 16px; background: #f1fcf4; border: 1px solid #dce8e0; border-radius: 8px; }
+.setup-address .account-eyebrow { font-size: 10px; }
+.setup-address p { font: 13px/1.7 monospace; margin: 9px 0 !important; overflow-wrap: anywhere; }
+.setup-address small { color: #5d6d65; font-size: 11px; }
+.setup-next-title { font: 700 10px "Manrope Variable", sans-serif; color: #745a34; text-transform: uppercase; letter-spacing: 0.08em; margin: 26px 0 18px; }
+.setup-preview-rail { list-style: none; margin: 0 0 24px 5px; padding: 0 0 0 18px; border-left: 1px solid #c0c8c4; }
+.setup-preview-rail li { position: relative; font-size: 12px; margin-bottom: 14px; }
+.setup-preview-rail li::before { content: ""; position: absolute; left: -22px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: #244a40; }
+.setup-review { display: grid; gap: 12px; margin: 0; }
+.setup-review > div { position: relative; padding: 16px; border: 1px solid #dce8e0; border-radius: 10px; background: #f1fcf4; }
+.setup-review dt { font-size: 11px; color: #745a34; text-transform: uppercase; }
+.setup-review dd { margin: 6px 0 0; padding-right: 80px; overflow-wrap: anywhere; }
+.setup-review button { position: absolute; right: 14px; top: 15px; font-size: 12px; text-decoration: underline; color: #244a40; cursor: pointer; }
+@media (max-width: 1000px) {
+  .setup-layout { grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr); gap: 20px; }
+  .setup-panel { padding: 26px; }
+  .setup-preview-card { padding: 18px; }
+  .setup-progress { padding: 20px; gap: 12px; }
+}
+@media (max-width: 800px) {
+  .setup-layout { grid-template-columns: 1fr; }
+  .setup-preview { position: static; }
+  .setup-progress { gap: 14px; }
+  .setup-progress button { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .setup-progress strong { font-size: 12px; }
+  .setup-progress small { font-size: 8px; }
+}
+@media (max-width: 450px) {
+  .wedding-wizard-main { padding: 28px 16px; }
+  .setup-panel { padding: 24px 18px; }
+  .setup-actions { flex-direction: column-reverse; align-items: stretch; }
+  .setup-actions .account-button { width: 100%; }
+  .setup-actions > a { text-align: center; }
+  .setup-review dd { padding-right: 0; }
+  .setup-review button { position: static; margin-top: 12px; }
+}

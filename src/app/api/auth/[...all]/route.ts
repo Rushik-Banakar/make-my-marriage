@@ -1,3 +1,4 @@
+import { withRequestLog } from "@/lib/http/request-log";
 import { toNextJsHandler } from "better-auth/next-js";
 import { getAuth } from "@/lib/auth/server";
 import { readAuthEnvironment } from "@/lib/auth/config";
@@ -28,5 +29,5 @@ async function handle(request: Request) {
   }
 }
 
-export const GET = handle;
-export const POST = handle;
+export const GET = (request: Request) => withRequestLog(request, "auth", () => handle(request));
+export const POST = (request: Request) => withRequestLog(request, "auth", () => handle(request));

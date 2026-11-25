@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
+vi.mock("better-auth/api", () => ({
+  APIError: class extends Error {},
+  createAuthMiddleware: (handler: unknown) => handler,
+}));
+vi.mock("better-auth/plugins/email-otp", () => ({ emailOTP: vi.fn() }));
 const authDependencies = vi.hoisted(() => ({
   getSession: vi.fn(),
   configure: vi.fn(),

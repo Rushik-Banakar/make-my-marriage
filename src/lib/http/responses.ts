@@ -1,8 +1,10 @@
-export function apiSuccess(data: unknown, requestId = crypto.randomUUID()) {
+export function apiSuccess(data: unknown, requestId = crypto.randomUUID(), options: { status?: number; location?: string } = {}) {
   return Response.json(
     { data, meta: { requestId } },
     {
-      headers: { "Cache-Control": "no-store", "X-Request-Id": requestId },
+      status: options.status ?? 200,
+      headers: { "Cache-Control": "no-store", "X-Request-Id": requestId,
+        ...(options.location ? { Location: options.location } : {}) },
     },
   );
 }

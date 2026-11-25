@@ -1,10 +1,11 @@
+import { withRequestLog } from "@/lib/http/request-log";
 import { getSession } from "@/lib/auth/server";
 import { apiError, apiSuccess } from "@/lib/http/responses";
 import { listMyWeddings } from "@/modules/weddings/service";
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request) {
+async function get(request: Request) {
   try {
     const session = await getSession(request.headers);
     if (!session)
@@ -25,4 +26,8 @@ export async function GET(request: Request) {
       "Your account could not be loaded. Please try again.",
     );
   }
+}
+
+export async function GET(request: Request) {
+  return withRequestLog(request, "account.me", () => get(request));
 }

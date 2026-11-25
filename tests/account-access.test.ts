@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ObjectId } from "mongodb";
 
 vi.mock("server-only", () => ({}));
+vi.mock("next/server", () => ({ after: vi.fn() }));
 const dependencies = vi.hoisted(() => ({
   session: vi.fn(),
   findWeddings: vi.fn(),

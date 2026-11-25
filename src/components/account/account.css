@@ -657,3 +657,27 @@
   color: #35584a;
   cursor: pointer;
 }
+
+.create-wedding-link { margin-top: 24px; }
+.wedding-lifecycle { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2d6d6; }
+.account-button.danger { background: #8f3434; color: white; border-color: #8f3434; }
+.wedding-lifecycle p, .wedding-lifecycle label { overflow-wrap: anywhere; }
+.wedding-lifecycle-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.wedding-lifecycle-actions .account-button { width: auto; }
+.wedding-setup-main { max-width: 850px; }
+.wedding-setup-card { margin-top: 32px; padding: 32px; background: white; border: 1px solid #dce8e0; border-radius: 18px; }
+.wedding-setup-card h2 { font-size: 30px; margin-bottom: 24px; }
+.wedding-setup-form fieldset { gap: 20px; }
+.wedding-setup-form select { min-width: 0; width: 100%; padding: 12px; border: 1px solid #b9c9bf; border-radius: 8px; background: white; color: #203b30; }
+.wedding-setup-form select:focus-visible { outline: 2px solid #417060; outline-offset: 1px; }
+.wedding-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.wedding-setup-form > p { margin-top: 24px; }
+.workspace-eyebrow { margin-top: 32px; }
+.weddings-main h1 { overflow-wrap: anywhere; }
+.wedding-details { display: grid; gap: 20px; margin-bottom: 28px; }
+.wedding-details dt { font-size: 0.75rem; color: #5d6d65; }
+.wedding-details dd { margin: 3px 0 0; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .wedding-form-row { grid-template-columns: 1fr; }
+  .wedding-setup-card { padding: 24px 20px; }
+}
